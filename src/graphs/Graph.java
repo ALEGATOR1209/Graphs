@@ -22,6 +22,7 @@ public class Graph {
     public Graph add(Node node) {
         Number num = node.getId();
         this.nodes.put(num, node);
+        node.setGraph(this);
         return this;
     }
     public Graph draw(JFrame window) {
@@ -40,6 +41,7 @@ public class Graph {
                 throw new Error(i + " line of matrix has wrong length.");
             nodes[i] = new Node(i * 10, i * 10, i, i);
             graph.add(nodes[i]);
+            nodes[i].setGraph(graph);
         }
         if (nodes.length <= 0) throw new Error("Matrix is empty.");
 
