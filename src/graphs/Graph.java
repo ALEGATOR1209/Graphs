@@ -4,32 +4,30 @@ import javax.swing.*;
 import java.util.HashMap;
 
 public class Graph {
-    boolean directed = false;
-    HashMap<Number, Node> nodes;
-    HashMap<Number, String> edges;
+    public boolean directed = false;
+    private HashMap<Number, Node> nodes = new HashMap<>();
+    private HashMap<Number, String> edges = new HashMap<>();
 
-    public Graph(boolean directed) {
+    private Graph(boolean directed) {
         this.directed = directed;
-        this.init();
     }
-    public Graph() {
-        this.init();
-    }
-    private void init() {
-        nodes = new HashMap();
-        edges = new HashMap();
-    }
-    public Graph add(Node node) {
+    private void add(Node node) {
         Number num = node.getId();
         this.nodes.put(num, node);
         node.setGraph(this);
-        return this;
     }
     public Graph draw(JFrame window) {
         this.nodes.values().forEach(
                 node -> node.draw(window)
         );
         return this;
+    }
+    public Graph hide() {
+        this.nodes.values().forEach(Node::hide);
+        return this;
+    }
+    public void show() {
+        this.nodes.values().forEach(Node::show);
     }
     public static Graph fromMatrix(int[][] matrix, boolean directed) {
         int n = matrix.length;
@@ -46,7 +44,10 @@ public class Graph {
         if (nodes.length <= 0) throw new Error("Matrix is empty.");
 
         for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
-            if (matrix[i][j] == 1) nodes[i].connect(nodes[j]);
+            if (matrix[i][j] == 1) {
+                if (!nodes[j].isConnected(nodes[i]))
+                    nodes[i].connect(nodes[j]);
+            }
 
         return graph;
     }
@@ -62,7 +63,6 @@ public class Graph {
                 .setCoordinates(dX, dY);
             angle += angleStep;
         }
-
         return this;
     }
 }
