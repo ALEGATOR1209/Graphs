@@ -23,7 +23,7 @@ class Window extends JFrame {
         directed.setSize(100, 100);
         directed.setBounds(100, 100, 100, 20);
         directed.setLocation(600, 0);
-        directed.setSelected(false);
+        directed.setSelected(true);
         directed.setFocusable(false);
         directed.setFont(new Font("Arial", Font.PLAIN, 16));
         directed.setBackground(Color.gray);

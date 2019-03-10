@@ -3,7 +3,7 @@ import java.awt.*;
 import java.util.HashMap;
 import javax.swing.*;
 
-public class Node {
+class Node {
     private int x, y, value, id;
     private Graph graph;
     private int size = 50;
@@ -25,12 +25,6 @@ public class Node {
     }
     void setGraph(Graph graph) { this.graph = graph; }
 
-    public String print() {
-        int x = this.x;
-        int y = this.y;
-        int value = this.value;
-        return String.format("{Vortex: x: %d, y: %d, value: %d }", x, y, value);
-    }
     void draw(JFrame window) {
         Container container = window.getContentPane();
         this.drawConnections(window);

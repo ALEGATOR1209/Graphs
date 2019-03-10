@@ -3,8 +3,13 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        int[][] matrixO = Main.generateMatrix(8, 4, 1, 0, false);
-        int[][] matrixS = Main.generateMatrix(8, 4, 1, 0, true);
+        int n1 = 8,
+            n2 = 4,
+            n3 = 1,
+            n4 = 0;
+
+        int[][] matrixO = Main.generateMatrix(n1, n2, n3, n4, false);
+        int[][] matrixS = Main.generateMatrix(n1, n2, n3, n4, true);
         new Window("Graphs")
             .drawGraph(matrixS, false)
             .drawGraph(matrixO, true)

@@ -8,10 +8,10 @@ import java.awt.event.ItemListener;
 class GraphChanger implements ItemListener {
     private Graph orientedGraph, unorientedGraph;
     void addGraph(Graph graph) {
-        if (graph.directed) this.orientedGraph = graph;
+        if (!graph.directed) this.unorientedGraph = graph;
         else {
-            this.unorientedGraph = graph;
-            this.unorientedGraph.show();
+            this.orientedGraph = graph;
+            this.orientedGraph.show();
         }
     }
 
