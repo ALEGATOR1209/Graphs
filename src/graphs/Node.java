@@ -4,9 +4,9 @@ import java.util.HashMap;
 import javax.swing.*;
 
 class Node {
-    private int x, y, value, id;
+    public int x, y, value, id;
     private Graph graph;
-    private int size = 50;
+    public int size = 50;
     private HashMap<Integer, Node> connections = new HashMap<>();
     private HashMap<Integer, JComponent> graphicalObject = new HashMap<>();
     Node(int x, int y, int value, int id) {
