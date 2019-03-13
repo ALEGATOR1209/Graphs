@@ -7,21 +7,11 @@ import java.awt.event.ItemListener;
 
 class GraphChanger implements ItemListener {
     private Graph orientedGraph, unorientedGraph;
-    void addGraph(Graph graph) {
-        if (!graph.directed) this.unorientedGraph = graph;
-        else {
-            this.orientedGraph = graph;
-            this.orientedGraph.show();
-        }
-    }
+    private Window window;
+    public GraphChanger(Window window) { this.window = window; }
 
     public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.DESELECTED) {
-            this.orientedGraph.hide();
-            this.unorientedGraph.show();
-        } else {
-            this.unorientedGraph.hide();
-            this.orientedGraph.show();
-        }
+        this.window.changeOrientation();
+        this.window.redraw();
     }
 }

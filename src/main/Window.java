@@ -9,13 +9,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 class Window extends JFrame {
-    private int width = 1000, height = 500;
+    private int width = 1000, height = 800;
     private int x = 0, y = 0;
     private int n1 = 8,
                 n2 = 4,
                 n3 = 1,
                 n4 = 0;
-    private GraphChanger listener;
+    private boolean oriented = true;
     Window(String title) {
         super(title);
         this.init();
@@ -25,40 +25,39 @@ class Window extends JFrame {
         this.setBounds(this.x, this.y, this.width, this.height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container content = this.getContentPane();
-        this.listener = new GraphChanger();
 
-        JLabel n1Label = new Text("n1: ", 570, 10);
-        JSlider n1Bar = new Slider(600, 10, this.n1);
+        JLabel n1Label = new Text("n1: ", 670, 10);
+        JSlider n1Bar = new Slider(700, 10, this.n1);
         n1Bar.setEnabled(false);
         n1Bar.addChangeListener(new NumberChanger(this, 1));
 
-        JLabel n2Label = new Text("n2: ", 570, 70);
-        JSlider n2Bar = new Slider(600, 70, this.n2);
+        JLabel n2Label = new Text("n2: ", 670, 70);
+        JSlider n2Bar = new Slider(700, 70, this.n2, 5);
         n2Bar.setEnabled(false);
         n2Bar.addChangeListener(new NumberChanger(this, 2));
 
-        JLabel n3Label = new Text("n3: ", 570, 140);
-        JSlider n3Bar = new Slider(600, 140, this.n3);
+        JLabel n3Label = new Text("n3: ", 670, 140);
+        JSlider n3Bar = new Slider(700, 140, this.n3, 1);
         n3Bar.addChangeListener(new NumberChanger(this, 3));
 
-        JLabel n4Label = new Text("n4: ", 570, 210);
-        JSlider n4Bar = new Slider(600, 210, this.n4);
+        JLabel n4Label = new Text("n4: ", 670, 210);
+        JSlider n4Bar = new Slider(700, 210, this.n4);
         n4Bar.addChangeListener(new NumberChanger(this, 4));
 
         String zalikText = "Номер залікової книжки: " + this.n1 + this.n2 + "-" + this.n3 + this.n4;
         JLabel zalikovka = new JLabel(zalikText);
-        zalikovka.setLocation(570, 280);
+        zalikovka.setLocation(670, 280);
         zalikovka.setFont(new Font("Arial", Font.PLAIN, 16));
         zalikovka.setSize(300, 20);
 
         JCheckBox directed = new JCheckBox("Directed");
         directed.setSize(100, 50);
-        directed.setLocation(570, 350);
-        directed.setSelected(true);
+        directed.setLocation(670, 350);
+        directed.setSelected(this.oriented);
         directed.setFocusable(false);
         directed.setFont(new Font("Arial", Font.PLAIN, 16));
         directed.setToolTipText("Change directed graph to undirected.");
-        directed.addItemListener(this.listener);
+        directed.addItemListener(new GraphChanger(this));
 
         content.add(directed); content.add(zalikovka);
         content.add(n1Label); content.add(n1Bar);
@@ -66,18 +65,46 @@ class Window extends JFrame {
         content.add(n3Label); content.add(n3Bar);
         content.add(n4Label); content.add(n4Bar);
 
-        int[][] matrixDirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
-        int[][] matrixUndirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
-        this.drawGraph(matrixDirected, true)
-            .drawGraph(matrixUndirected, false);
+        if (this.oriented) {
+            int[][] matrix = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
+            this.drawMatrix(matrix, 670, 400)
+                .drawGraph(matrix, true);
+        }
+        else {
+            int[][] matrixUndirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
+            this.drawMatrix(matrixUndirected, 670, 400)
+                .drawGraph(matrixUndirected, false);
+        }
     }
-    private Window drawGraph(int[][] matrix, boolean oriented) {
-        this.listener.addGraph(Graph
-            .fromMatrix(matrix, oriented)
-            .circle(425, 205, 200)
-            .draw(this)
-            .hide());
+    private Window drawMatrix(int[][] matrix, int x, int y) {
+        int n = matrix.length;
+        Container container = this.getContentPane();
+        for (int i = 0; i < n; i++) {
+            Text text = new Text(i + "", x + 20 * (i + 1), y);
+            text.setForeground(Color.red);
+            container.add(text);
+        }
+        for (int i = 0; i < n; i++) {
+            Text text = new Text(i + "", x, y + 20 * (i + 1));
+            text.setForeground(Color.red);
+            container.add(text);
+            String connections = "";
+            for (int j = 0; j < n; j++)
+                connections = connections.concat("  " + matrix[i][j]);
+            connections = connections.trim();
+            JLabel string = new JLabel(connections);
+            string.setSize(220, 20);
+            string.setLocation(x + 20, y + 20 * (i + 1));
+            string.setFont(new Font("Arial", Font.PLAIN, 16));
+            container.add(string);
+        }
         return this;
+    }
+    private void drawGraph(int[][] matrix, boolean oriented) {
+        Graph
+            .fromMatrix(matrix, oriented)
+            .circle(550, 300, 250)
+            .draw(this);
     }
     private static int[][] generateMatrix(int n1, int n2, int n3, int n4, boolean symetric) {
         int n = 10 + n3;
@@ -85,23 +112,23 @@ class Window extends JFrame {
         Random random = new Random(n1  * 1000 + n2 * 100 + n3 * 10 + n4);
 
         if (symetric)
-            for (int i = n - 1; i >= 0; i--) {
-                for (int j = i; j >= 0; j--) {
-                    double element = Window.getRandomElement(random, n3, n4);
-                    matrix[i][j] = (int) Math.floor(element);
-                    matrix[j][i] = matrix[i][j];
-                }
-            }
-        else for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) for (int j = 0; j < i; j++) {
                 double element = Window.getRandomElement(random, n3, n4);
                 matrix[i][j] = (int) Math.floor(element);
+                matrix[j][i] = matrix[i][j];
+            }
+        else {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    double element = Window.getRandomElement(random, n3, n4);
+                    matrix[i][j] = (int) Math.floor(element);
+                }
             }
         }
         return matrix;
     }
     private static double getRandomElement(Random random, int n3, int n4) {
-        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.005 - n4 * 0.005 - 0.25);
+        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.01 - 0.3);
     }
     int getNumber(int n) {
         if (n == 1) return this.n1;
@@ -124,6 +151,7 @@ class Window extends JFrame {
         content.removeAll();
         this.init();
     }
+    public Window changeOrientation () { this.oriented = !this.oriented; return this; }
 }
 
 class NumberChanger implements ChangeListener {
@@ -144,6 +172,15 @@ class NumberChanger implements ChangeListener {
 class Slider extends JSlider {
     Slider(int x, int y, int val) {
         super(0, 9, 1);
+        this.setLocation(x, y);
+        this.setSize(200, 50);
+        this.setValue(val);
+        this.setPaintTicks(true);
+        this.setPaintLabels(true);
+        this.setMajorTickSpacing(1);
+    }
+    Slider(int x, int y, int val, int max) {
+        super(0, max, 1);
         this.setLocation(x, y);
         this.setSize(200, 50);
         this.setValue(val);

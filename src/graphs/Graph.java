@@ -65,4 +65,32 @@ public class Graph {
         }
         return this;
     }
+    HashMap getCrossed(int startNode, int endNode, int startX, int startY, int endX, int endY) {
+        HashMap<Integer, Node> nodes = new HashMap<>();
+        for (Node node : this.nodes.values()) {
+            if (startNode == node.id) continue;
+            if (endNode == node.id) continue;
+
+            int counter = 0;
+            for (int x = node.x - node.size; x < node.x + node.size; x++) {
+                int y = startY + (x - startX) * (int) Math.floor((endY - startY) * 1.0 / (endX - startX));
+                if (Math.pow(x - node.x, 2) + Math.pow(y - node.y, 2) == Math.pow(node.size, 2))
+                    counter++;
+            }
+            if (counter == 2) nodes.put(node.id, node);
+        }
+        return nodes;
+    }
+    public String getConnectionsString (int id) {
+        String res = "";
+        Node node = this.nodes.get(id);
+        HashMap connections = node.getConnections();
+        for (int i = 0; i < this.nodes.size(); i++) {
+            if (connections.containsKey(i))
+                res = res.concat("  1");
+            else res = res.concat("  0");
+        }
+        res = res.trim();
+        return res;
+    }
 }

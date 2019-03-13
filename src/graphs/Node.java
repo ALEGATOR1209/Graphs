@@ -4,9 +4,9 @@ import java.util.HashMap;
 import javax.swing.*;
 
 class Node {
-    public int x, y, value, id;
+    int x, y, value, id;
     private Graph graph;
-    public int size = 50;
+    int size = 50;
     private HashMap<Integer, Node> connections = new HashMap<>();
     private HashMap<Integer, JComponent> graphicalObject = new HashMap<>();
     Node(int x, int y, int value, int id) {
@@ -36,6 +36,7 @@ class Node {
     boolean isConnected(Node node) {
         return this.connections.containsKey(node.value);
     }
+    HashMap getConnections() { return this.connections; }
 
     private void drawConnections(JFrame window) {
         Container container = window.getContentPane();

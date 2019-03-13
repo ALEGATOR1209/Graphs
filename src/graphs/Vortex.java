@@ -12,7 +12,7 @@ public class Vortex extends JComponent {
         this.y = y;
         this.size = size;
         this.value = String.valueOf(value).toCharArray();
-        this.setSize(500, 500);
+        this.setSize(1000, 1000);
     }
 
     public void paintComponent(Graphics g) {

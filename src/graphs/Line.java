@@ -11,7 +11,7 @@ public class Line extends JComponent {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
         this.arrow = arrow;
-        this.setSize(500, 500);
+        this.setSize(1000, 1000);
     }
 
     public void paintComponent(Graphics g) {

@@ -31,7 +31,7 @@ class Arc extends JComponent {
                 this.arcAngle = -270;
             }
         }
-        this.setSize(500, 500);
+        this.setSize(1000, 1000);
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
