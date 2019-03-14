@@ -20,10 +20,41 @@ class Window extends JFrame {
         super(title);
         this.init();
     }
-
     private void init() {
         this.setBounds(this.x, this.y, this.width, this.height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this
+            .drawSliders()
+            .drawCheckBox()
+            .createMatrix();
+    }
+    private Window createMatrix() {
+        if (this.oriented) {
+            int[][] matrix = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
+            this.drawMatrix(matrix, 670, 400)
+                .drawGraph(matrix, true);
+        }
+        else {
+            int[][] matrixUndirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
+            this.drawMatrix(matrixUndirected, 670, 400)
+                .drawGraph(matrixUndirected, false);
+        }
+        return this;
+    }
+    private Window drawCheckBox() {
+        JCheckBox directed = new JCheckBox("Directed");
+        directed.setSize(100, 50);
+        directed.setLocation(670, 350);
+        directed.setSelected(this.oriented);
+        directed.setFocusable(false);
+        directed.setFont(new Font("Arial", Font.PLAIN, 16));
+        directed.setToolTipText("Change directed graph to undirected.");
+        directed.addItemListener(new GraphChanger(this));
+
+        this.getContentPane().add(directed);
+        return this;
+    }
+    private Window drawSliders() {
         Container content = this.getContentPane();
 
         JLabel n1Label = new Text("n1: ", 670, 10);
@@ -50,31 +81,13 @@ class Window extends JFrame {
         zalikovka.setFont(new Font("Arial", Font.PLAIN, 16));
         zalikovka.setSize(300, 20);
 
-        JCheckBox directed = new JCheckBox("Directed");
-        directed.setSize(100, 50);
-        directed.setLocation(670, 350);
-        directed.setSelected(this.oriented);
-        directed.setFocusable(false);
-        directed.setFont(new Font("Arial", Font.PLAIN, 16));
-        directed.setToolTipText("Change directed graph to undirected.");
-        directed.addItemListener(new GraphChanger(this));
-
-        content.add(directed); content.add(zalikovka);
         content.add(n1Label); content.add(n1Bar);
         content.add(n2Label); content.add(n2Bar);
         content.add(n3Label); content.add(n3Bar);
         content.add(n4Label); content.add(n4Bar);
+        content.add(zalikovka);
 
-        if (this.oriented) {
-            int[][] matrix = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
-            this.drawMatrix(matrix, 670, 400)
-                .drawGraph(matrix, true);
-        }
-        else {
-            int[][] matrixUndirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
-            this.drawMatrix(matrixUndirected, 670, 400)
-                .drawGraph(matrixUndirected, false);
-        }
+        return this;
     }
     private Window drawMatrix(int[][] matrix, int x, int y) {
         int n = matrix.length;
@@ -151,7 +164,7 @@ class Window extends JFrame {
         content.removeAll();
         this.init();
     }
-    public Window changeOrientation () { this.oriented = !this.oriented; return this; }
+    void changeOrientation() { this.oriented = !this.oriented; }
 }
 
 class NumberChanger implements ChangeListener {
