@@ -8,7 +8,6 @@ class Node {
     private Graph graph;
     int size = 50;
     private HashMap<Integer, Node> connections = new HashMap<>();
-    private HashMap<Integer, JComponent> graphicalObject = new HashMap<>();
     Node(int x, int y, int value, int id) {
         this.x = x;
         this.y = y;
@@ -30,13 +29,11 @@ class Node {
         this.drawConnections(window);
         Vortex vortex = new Vortex(this.x, this.y, this.size, this.value);
         container.add(vortex);
-        this.graphicalObject.put(this.graphicalObject.size(), vortex);
     }
 
-    boolean isConnected(Node node) {
+    public boolean isConnected(Node node) {
         return this.connections.containsKey(node.value);
     }
-    HashMap getConnections() { return this.connections; }
 
     private void drawConnections(JFrame window) {
         Container container = window.getContentPane();
@@ -46,7 +43,6 @@ class Node {
                     this.drawSelfArrow(window);
                     return;
                 }
-                if (graph.isConnected(this)) return;
                 int dx = graph.x - this.x;
                 int dy = graph.y - this.y;
                 double tang = 1.0 * dy / dx;
@@ -72,24 +68,11 @@ class Node {
 
                 Line line = new Line(startX, startY, endX, endY, this.graph.directed);
                 container.add(line);
-                this.graphicalObject.put(this.graphicalObject.size(), line);
             }
         );
     }
     private void drawSelfArrow(JFrame window) {
         Arc arc = new Arc(this.x, this.y);
         window.getContentPane().add(arc);
-        this.graphicalObject.put(this.graphicalObject.size(), arc);
-    }
-
-    void hide() {
-        this.graphicalObject.values().forEach(
-            obj -> obj.setVisible(false)
-        );
-    }
-    void show() {
-        this.graphicalObject.values().forEach(
-            obj -> obj.setVisible(true)
-        );
     }
 }

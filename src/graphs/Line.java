@@ -31,7 +31,7 @@ public class Line extends JComponent {
 
         if (dy > 0)
             angle = P2 - angle;
-        else if (dy < -50)
+        else if (dy < 0)
             angle = -P2 - angle;
         else if (dx > 0)
             angle = -P2 + angle;

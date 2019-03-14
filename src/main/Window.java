@@ -93,21 +93,23 @@ class Window extends JFrame {
         int n = matrix.length;
         Container container = this.getContentPane();
         for (int i = 0; i < n; i++) {
-            Text text = new Text(i + "", x + 20 * (i + 1), y);
-            text.setForeground(Color.red);
-            container.add(text);
-        }
-        for (int i = 0; i < n; i++) {
-            Text text = new Text(i + "", x, y + 20 * (i + 1));
-            text.setForeground(Color.red);
-            container.add(text);
+            String valency = this.countConnections(matrix, i);
+            Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
+            horizontalNumber.setForeground(Color.red);
+            horizontalNumber.setToolTipText("Валентність: " + valency);
+            container.add(horizontalNumber);
+
+            Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
+            verticalNumber.setForeground(Color.red);
+            verticalNumber.setToolTipText("Валентність: " + valency);
+            container.add(verticalNumber);
             String connections = "";
             for (int j = 0; j < n; j++)
                 connections = connections.concat("  " + matrix[i][j]);
             connections = connections.trim();
             JLabel string = new JLabel(connections);
             string.setSize(220, 20);
-            string.setLocation(x + 20, y + 20 * (i + 1));
+            string.setLocation(x + 25, y + 20 * (i + 1));
             string.setFont(new Font("Arial", Font.PLAIN, 16));
             container.add(string);
         }
@@ -165,6 +167,28 @@ class Window extends JFrame {
         this.init();
     }
     void changeOrientation() { this.oriented = !this.oriented; }
+    private String countConnections(int[][] matrix, int node) {
+        String connections = "";
+
+        if (!this.oriented) {
+            int counter = 0;
+            int[] line = matrix[node];
+            for (int i = 0; i < line.length; i++)
+                if (line[i] == 1) {
+                    counter++;
+                    if (i == node) counter++;
+                }
+            connections += counter + "";
+        } else {
+            int plus = 0, minus = 0;
+            int[] line = matrix[node];
+            for (int i : line) if (i == 1) minus++;
+            for (int[] i : matrix) if (i[node] == 1) plus++;
+            connections += "+" + plus + " -" + minus;
+        }
+
+        return connections;
+    }
 }
 
 class NumberChanger implements ChangeListener {
@@ -206,6 +230,12 @@ class Text extends JLabel {
     Text(String text, int x, int y) {
         super(text);
         this.setSize(50, 20);
+        this.setLocation(x, y);
+        this.setFont(new Font("Arial", Font.PLAIN, 16));
+    }
+    Text(String text, int x, int y, int width) {
+        super(text);
+        this.setSize(width, 20);
         this.setLocation(x, y);
         this.setFont(new Font("Arial", Font.PLAIN, 16));
     }
