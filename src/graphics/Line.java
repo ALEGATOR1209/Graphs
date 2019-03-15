@@ -1,4 +1,4 @@
-package graphs;
+package graphics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +7,7 @@ public class Line extends JComponent {
     private int startX, startY, endX, endY;
     private boolean arrow;
 
-    Line(int startX, int startY, int endX, int endY, boolean arrow) {
+    public Line(int startX, int startY, int endX, int endY, boolean arrow) {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
         this.arrow = arrow;

@@ -1,13 +1,13 @@
-package graphs;
+package graphics;
 
 import javax.swing.*;
 import java.awt.*;
 
-class Arc extends JComponent {
+public class Arc extends JComponent {
     private int startX, startY;
     private int startAngle, arcAngle;
 
-    Arc(int startX, int startY) {
+    public Arc(int startX, int startY) {
         if (startX <= 250) {
             this.startX = startX - 25;
             if (startY <= 250) {

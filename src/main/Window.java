@@ -1,14 +1,13 @@
 package main;
 
 import graphs.Graph;
+import templates.*;
 
 import java.awt.*;
 import java.util.Random;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-class Window extends JFrame {
+public class Window extends JFrame {
     private int width = 1000, height = 800;
     private int x = 0, y = 0;
     private int n1 = 8,
@@ -28,7 +27,7 @@ class Window extends JFrame {
             .drawCheckBox()
             .createMatrix();
     }
-    private Window createMatrix() {
+    private void createMatrix() {
         if (this.oriented) {
             int[][] matrix = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
             this.drawMatrix(matrix, 670, 400)
@@ -39,7 +38,6 @@ class Window extends JFrame {
             this.drawMatrix(matrixUndirected, 670, 400)
                 .drawGraph(matrixUndirected, false);
         }
-        return this;
     }
     private Window drawCheckBox() {
         JCheckBox directed = new JCheckBox("Directed");
@@ -92,12 +90,21 @@ class Window extends JFrame {
     private Window drawMatrix(int[][] matrix, int x, int y) {
         int n = matrix.length;
         Container container = this.getContentPane();
+        String previousValency = "";
+        boolean homogeneous = true;
         for (int i = 0; i < n; i++) {
             String valency = this.countConnections(matrix, i);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
             horizontalNumber.setForeground(Color.red);
             horizontalNumber.setToolTipText("Валентність: " + valency);
             container.add(horizontalNumber);
+            if (previousValency.length() == 0) {
+                previousValency = valency;
+            }
+            if (homogeneous && !previousValency.equals(valency)) {
+                homogeneous = false;
+            }
+            previousValency = valency;
 
             Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
             verticalNumber.setForeground(Color.red);
@@ -113,6 +120,20 @@ class Window extends JFrame {
             string.setFont(new Font("Arial", Font.PLAIN, 16));
             container.add(string);
         }
+        JLabel homo;
+        if (homogeneous) {
+            homo = new JLabel("ГРАФ ОДНОРІДНИЙ");
+            homo.setToolTipText("Валентність: " + previousValency);
+            homo.setForeground(new Color(30, 120, 10));
+        }
+        else {
+            homo = new JLabel("ГРАФ НЕОДНОРІДНИЙ");
+            homo.setForeground(Color.red);
+        }
+        homo.setFont(new Font("Arial", Font.PLAIN, 16));
+        homo.setSize(220, 60);
+        homo.setLocation(x, (n + 2) * 20 + y);
+        container.add(homo);
         return this;
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
@@ -145,28 +166,28 @@ class Window extends JFrame {
     private static double getRandomElement(Random random, int n3, int n4) {
         return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.01 - 0.3);
     }
-    int getNumber(int n) {
+    public int getNumber(int n) {
         if (n == 1) return this.n1;
         if (n == 2) return this.n2;
         if (n == 3) return this.n3;
         if (n == 4) return this.n4;
         throw new Error("Wrong number");
     }
-    Window setNumber(int n, int value) {
+    public Window setNumber(int n, int value) {
         if (n == 1) { this.n1 = value; return this; }
         if (n == 2) { this.n2 = value; return this; }
         if (n == 3) { this.n3 = value; return this; }
         if (n == 4) { this.n4 = value; return this; }
         throw new Error("Wrong number");
     }
-    void redraw() {
+    public void redraw() {
         Container content = this.getContentPane();
         Component[] components = content.getComponents();
         for (Component component : components) component.setVisible(false);
         content.removeAll();
         this.init();
     }
-    void changeOrientation() { this.oriented = !this.oriented; }
+    public void changeOrientation() { this.oriented = !this.oriented; }
     private String countConnections(int[][] matrix, int node) {
         String connections = "";
 
@@ -186,57 +207,6 @@ class Window extends JFrame {
             for (int[] i : matrix) if (i[node] == 1) plus++;
             connections += "+" + plus + " -" + minus;
         }
-
         return connections;
-    }
-}
-
-class NumberChanger implements ChangeListener {
-    private Window window;
-    private int number;
-    NumberChanger (Window window, int number) {
-        this.window = window;
-        this.number = number;
-    }
-    public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider) e.getSource();
-        if (this.window.getNumber(this.number) == source.getValue()) return;
-        this.window.setNumber(this.number, source.getValue())
-            .redraw();
-    }
-}
-
-class Slider extends JSlider {
-    Slider(int x, int y, int val) {
-        super(0, 9, 1);
-        this.setLocation(x, y);
-        this.setSize(200, 50);
-        this.setValue(val);
-        this.setPaintTicks(true);
-        this.setPaintLabels(true);
-        this.setMajorTickSpacing(1);
-    }
-    Slider(int x, int y, int val, int max) {
-        super(0, max, 1);
-        this.setLocation(x, y);
-        this.setSize(200, 50);
-        this.setValue(val);
-        this.setPaintTicks(true);
-        this.setPaintLabels(true);
-        this.setMajorTickSpacing(1);
-    }
-}
-class Text extends JLabel {
-    Text(String text, int x, int y) {
-        super(text);
-        this.setSize(50, 20);
-        this.setLocation(x, y);
-        this.setFont(new Font("Arial", Font.PLAIN, 16));
-    }
-    Text(String text, int x, int y, int width) {
-        super(text);
-        this.setSize(width, 20);
-        this.setLocation(x, y);
-        this.setFont(new Font("Arial", Font.PLAIN, 16));
     }
 }

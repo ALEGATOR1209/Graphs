@@ -1,13 +1,13 @@
-package main;
+package templates;
 
-import graphs.Graph;
+import main.Window;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-class GraphChanger implements ItemListener {
+public class GraphChanger implements ItemListener {
     private Window window;
-    GraphChanger(Window window) { this.window = window; }
+    public GraphChanger(Window window) { this.window = window; }
 
     public void itemStateChanged(ItemEvent e) {
         this.window.changeOrientation();

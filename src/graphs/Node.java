@@ -1,4 +1,6 @@
 package graphs;
+
+import graphics.*;
 import java.awt.*;
 import java.util.HashMap;
 import javax.swing.*;
@@ -7,6 +9,7 @@ class Node {
     int x, y, value, id;
     private Graph graph;
     int size = 50;
+    private int valency = 0;
     private HashMap<Integer, Node> connections = new HashMap<>();
     Node(int x, int y, int value, int id) {
         this.x = x;
@@ -21,17 +24,22 @@ class Node {
     int getId() { return this.id; }
     void connect(Node node) {
         this.connections.put(node.getId(), node);
+        this.addValency();
+        node.addValency();
     }
+    private void addValency() { this.valency++; }
     void setGraph(Graph graph) { this.graph = graph; }
 
     void draw(JFrame window) {
         Container container = window.getContentPane();
         this.drawConnections(window);
-        Vortex vortex = new Vortex(this.x, this.y, this.size, this.value);
+        boolean isolated = this.valency == 0;
+        boolean leave = this.valency == 1;
+        Vortex vortex = new Vortex(this.x, this.y, this.size, this.value, isolated, leave);
         container.add(vortex);
     }
 
-    public boolean isConnected(Node node) {
+    boolean isConnected(Node node) {
         return this.connections.containsKey(node.value);
     }
 

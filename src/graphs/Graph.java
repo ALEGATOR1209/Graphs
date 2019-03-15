@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.HashMap;
 
 public class Graph {
-    public boolean directed = false;
+    boolean directed;
     private HashMap<Number, Node> nodes = new HashMap<>();
 
     private Graph(boolean directed) {
