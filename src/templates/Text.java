@@ -16,4 +16,10 @@ public class Text extends JLabel {
         this.setLocation(x, y);
         this.setFont(new Font("Arial", Font.PLAIN, 16));
     }
+    public Text(int size, String text, int x, int y) {
+        super(text);
+        this.setSize(50, 20);
+        this.setLocation(x, y);
+        this.setFont(new Font("Arial", Font.PLAIN, size));
+    }
 }

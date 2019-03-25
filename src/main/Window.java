@@ -1,6 +1,7 @@
 package main;
 
 import graphs.Graph;
+import graphs.Matrix;
 import templates.*;
 
 import java.awt.*;
@@ -14,6 +15,7 @@ public class Window extends JFrame {
                 n2 = 4,
                 n3 = 1,
                 n4 = 0;
+    private int matrix = 1;
     private boolean oriented = true;
     Window(String title) {
         super(title);
@@ -89,9 +91,14 @@ public class Window extends JFrame {
     }
     private Window drawMatrix(int[][] matrix, int x, int y) {
         int n = matrix.length;
+        int[][] startMatrix = matrix;
+        for (int i = 1; i < this.matrix; i++)
+            matrix = Matrix.multiplyMatrixes(matrix, startMatrix);
         Container container = this.getContentPane();
         String previousValency = "";
         boolean homogeneous = true;
+        Text matrixLabel = new Text("A :", x - 30, y);
+        Text matrixPower = new Text(10, this.matrix + "", x - 20, y - 10);
         for (int i = 0; i < n; i++) {
             String valency = this.countConnections(matrix, i);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
@@ -132,14 +139,18 @@ public class Window extends JFrame {
         }
         homo.setFont(new Font("Arial", Font.PLAIN, 16));
         homo.setSize(220, 60);
-        homo.setLocation(x, (n + 2) * 20 + y);
-        container.add(homo);
+        homo.setLocation(x, (n + 2) * 20 + y + 20);
+        Slider slider = new Slider(x, (n + 2) * 20 + y - 10, this.matrix,1, 3);
+        slider.addChangeListener(new MatrixChanger(this));
+        slider.setToolTipText("Зміна степеню матриці");
+        container.add(homo); container.add(slider);
+        container.add(matrixLabel); container.add(matrixPower);
         return this;
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
         Graph
             .fromMatrix(matrix, oriented)
-            .circle(550, 300, 250)
+            .circle(550, 300, 270)
             .draw(this);
     }
     private static int[][] generateMatrix(int n1, int n2, int n3, int n4, boolean symetric) {
@@ -179,6 +190,10 @@ public class Window extends JFrame {
         if (n == 3) { this.n3 = value; return this; }
         if (n == 4) { this.n4 = value; return this; }
         throw new Error("Wrong number");
+    }
+    public Window setMatrix(int n) {
+        this.matrix = n;
+        return this;
     }
     public void redraw() {
         Container content = this.getContentPane();
