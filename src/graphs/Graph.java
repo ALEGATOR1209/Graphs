@@ -1,5 +1,7 @@
 package graphs;
 
+import graphics.Background;
+
 import javax.swing.*;
 import java.util.HashMap;
 
@@ -16,6 +18,9 @@ public class Graph {
         node.setGraph(this);
     }
     public void draw(JFrame window) {
+        window
+            .getContentPane()
+            .add(new Background(630, 650, 5, 5));
         this.nodes.values().forEach(
                 node -> node.draw(window)
         );

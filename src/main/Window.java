@@ -140,10 +140,14 @@ public class Window extends JFrame {
         homo.setFont(new Font("Arial", Font.PLAIN, 16));
         homo.setSize(220, 60);
         homo.setLocation(x, (n + 2) * 20 + y + 20);
-        Slider slider = new Slider(x, (n + 2) * 20 + y - 10, this.matrix,1, 3);
+        Slider slider = new Slider(x + 160, (n + 2) * 20 + y - 10, this.matrix,1, 3);
+        slider.setSize(100, 50);
+        Text sliderText = new Text("Степінь матриці: ", x, (n + 2) * 20 + y - 10);
+        sliderText.setSize(150, 20);
         slider.addChangeListener(new MatrixChanger(this));
         slider.setToolTipText("Зміна степеню матриці");
         container.add(homo); container.add(slider);
+        container.add(sliderText);
         container.add(matrixLabel); container.add(matrixPower);
         return this;
     }
