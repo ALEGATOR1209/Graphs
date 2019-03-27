@@ -160,21 +160,18 @@ public class Window extends JFrame {
     private static int[][] generateMatrix(int n1, int n2, int n3, int n4, boolean symetric) {
         int n = 10 + n3;
         int[][] matrix = new int[n][n];
-        Random random = new Random(n1  * 1000 + n2 * 100 + n3 * 10 + n4);
-
-        if (symetric)
-            for (int i = 0; i < n; i++) for (int j = 0; j < i; j++) {
+        Random random = new Random(n1 * 1000 + n2 * 100 + n3 * 10 + n4);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 double element = Window.getRandomElement(random, n3, n4);
                 matrix[i][j] = (int) Math.floor(element);
-                matrix[j][i] = matrix[i][j];
             }
-        else {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    double element = Window.getRandomElement(random, n3, n4);
-                    matrix[i][j] = (int) Math.floor(element);
-                }
-            }
+        }
+
+        if (symetric) {
+            for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
+                if (matrix[i][j] == 1) matrix[j][i] = 1;
+                else if (matrix[j][i] == 1) matrix[i][j] = 1;
         }
         return matrix;
     }
