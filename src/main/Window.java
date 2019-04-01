@@ -1,11 +1,9 @@
 package main;
 
-import graphs.Graph;
-import graphs.Matrix;
+import graphs.*;
 import templates.*;
 
 import java.awt.*;
-import java.util.Random;
 import javax.swing.*;
 
 public class Window extends JFrame {
@@ -17,6 +15,7 @@ public class Window extends JFrame {
                 n4 = 0;
     private int matrix = 1;
     private boolean oriented = true;
+    private final Font FONT = new Font("Arial", Font.PLAIN, 16);
     Window(String title) {
         super(title);
         this.init();
@@ -27,16 +26,17 @@ public class Window extends JFrame {
         this
             .drawSliders()
             .drawCheckBox()
+            .drawWaysButton()
             .createMatrix();
     }
     private void createMatrix() {
         if (this.oriented) {
-            int[][] matrix = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
+            int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
             this.drawMatrix(matrix, 670, 400)
                 .drawGraph(matrix, true);
         }
         else {
-            int[][] matrixUndirected = Window.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
+            int[][] matrixUndirected = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
             this.drawMatrix(matrixUndirected, 670, 400)
                 .drawGraph(matrixUndirected, false);
         }
@@ -47,7 +47,7 @@ public class Window extends JFrame {
         directed.setLocation(670, 350);
         directed.setSelected(this.oriented);
         directed.setFocusable(false);
-        directed.setFont(new Font("Arial", Font.PLAIN, 16));
+        directed.setFont(this.FONT);
         directed.setToolTipText("Change directed graph to undirected.");
         directed.addItemListener(new GraphChanger(this));
 
@@ -55,8 +55,6 @@ public class Window extends JFrame {
         return this;
     }
     private Window drawSliders() {
-        Container content = this.getContentPane();
-
         JLabel n1Label = new Text("n1: ", 670, 10);
         JSlider n1Bar = new Slider(700, 10, this.n1);
         n1Bar.setEnabled(false);
@@ -78,33 +76,43 @@ public class Window extends JFrame {
         String zalikText = "Номер залікової книжки: " + this.n1 + this.n2 + "-" + this.n3 + this.n4;
         JLabel zalikovka = new JLabel(zalikText);
         zalikovka.setLocation(670, 280);
-        zalikovka.setFont(new Font("Arial", Font.PLAIN, 16));
+        zalikovka.setFont(this.FONT);
         zalikovka.setSize(300, 20);
 
-        content.add(n1Label); content.add(n1Bar);
-        content.add(n2Label); content.add(n2Bar);
-        content.add(n3Label); content.add(n3Bar);
-        content.add(n4Label); content.add(n4Bar);
-        content.add(zalikovka);
+        this.add(n1Label).add(n1Bar)
+            .add(n2Label).add(n2Bar)
+            .add(n3Label).add(n3Bar)
+            .add(n4Label).add(n4Bar)
+            .add(zalikovka);
 
+        return this;
+    }
+    private Window add(JComponent item) {
+        this.getContentPane().add(item);
+        return this;
+    }
+    private Window drawWaysButton() {
+        int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, !this.oriented);
+        JButton button = new JButton("Шляхи");
+        button.setFont(this.FONT);
+        button.setSize(100, 30);
+        button.setLocation(800, 360);
+        button.setActionCommand("Show Ways Window");
+        button.addActionListener(new ButtonListener(matrix, this.oriented));
+        this.add(button);
         return this;
     }
     private Window drawMatrix(int[][] matrix, int x, int y) {
         int n = matrix.length;
-        int[][] startMatrix = matrix;
-        for (int i = 1; i < this.matrix; i++)
-            matrix = Matrix.multiplyMatrixes(matrix, startMatrix);
-        Container container = this.getContentPane();
+        if (!this.oriented) this.matrix = 1;
         String previousValency = "";
         boolean homogeneous = true;
-        Text matrixLabel = new Text("A :", x - 30, y);
-        Text matrixPower = new Text(10, this.matrix + "", x - 20, y - 10);
         for (int i = 0; i < n; i++) {
-            String valency = this.countConnections(matrix, i);
+            String valency = Matrix.countConnections(matrix, i, this.oriented);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
             horizontalNumber.setForeground(Color.red);
             horizontalNumber.setToolTipText("Валентність: " + valency);
-            container.add(horizontalNumber);
+            this.add(horizontalNumber);
             if (previousValency.length() == 0) {
                 previousValency = valency;
             }
@@ -116,7 +124,7 @@ public class Window extends JFrame {
             Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
             verticalNumber.setForeground(Color.red);
             verticalNumber.setToolTipText("Валентність: " + valency);
-            container.add(verticalNumber);
+            this.add(verticalNumber);
             String connections = "";
             for (int j = 0; j < n; j++)
                 connections = connections.concat("  " + matrix[i][j]);
@@ -124,8 +132,8 @@ public class Window extends JFrame {
             JLabel string = new JLabel(connections);
             string.setSize(220, 20);
             string.setLocation(x + 25, y + 20 * (i + 1));
-            string.setFont(new Font("Arial", Font.PLAIN, 16));
-            container.add(string);
+            string.setFont(this.FONT);
+            this.add(string);
         }
         JLabel homo;
         if (homogeneous) {
@@ -137,18 +145,11 @@ public class Window extends JFrame {
             homo = new JLabel("ГРАФ НЕОДНОРІДНИЙ");
             homo.setForeground(Color.red);
         }
-        homo.setFont(new Font("Arial", Font.PLAIN, 16));
+        homo.setFont(this.FONT);
         homo.setSize(220, 60);
         homo.setLocation(x, (n + 2) * 20 + y + 20);
-        Slider slider = new Slider(x + 160, (n + 2) * 20 + y - 10, this.matrix,1, 3);
-        slider.setSize(100, 50);
-        Text sliderText = new Text("Степінь матриці: ", x, (n + 2) * 20 + y - 10);
-        sliderText.setSize(150, 20);
-        slider.addChangeListener(new MatrixChanger(this));
-        slider.setToolTipText("Зміна степеню матриці");
-        container.add(homo); container.add(slider);
-        container.add(sliderText);
-        container.add(matrixLabel); container.add(matrixPower);
+        this
+            .add(homo);
         return this;
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
@@ -157,27 +158,7 @@ public class Window extends JFrame {
             .circle(550, 300, 270)
             .draw(this);
     }
-    private static int[][] generateMatrix(int n1, int n2, int n3, int n4, boolean symetric) {
-        int n = 10 + n3;
-        int[][] matrix = new int[n][n];
-        Random random = new Random(n1 * 1000 + n2 * 100 + n3 * 10 + n4);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                double element = Window.getRandomElement(random, n3, n4);
-                matrix[i][j] = (int) Math.floor(element);
-            }
-        }
 
-        if (symetric) {
-            for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
-                if (matrix[i][j] == 1) matrix[j][i] = 1;
-                else if (matrix[j][i] == 1) matrix[i][j] = 1;
-        }
-        return matrix;
-    }
-    private static double getRandomElement(Random random, int n3, int n4) {
-        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.01 - 0.3);
-    }
     public int getNumber(int n) {
         if (n == 1) return this.n1;
         if (n == 2) return this.n2;
@@ -204,25 +185,4 @@ public class Window extends JFrame {
         this.init();
     }
     public void changeOrientation() { this.oriented = !this.oriented; }
-    private String countConnections(int[][] matrix, int node) {
-        String connections = "";
-
-        if (!this.oriented) {
-            int counter = 0;
-            int[] line = matrix[node];
-            for (int i = 0; i < line.length; i++)
-                if (line[i] == 1) {
-                    counter++;
-                    if (i == node) counter++;
-                }
-            connections += counter + "";
-        } else {
-            int plus = 0, minus = 0;
-            int[] line = matrix[node];
-            for (int i : line) if (i == 1) minus++;
-            for (int[] i : matrix) if (i[node] == 1) plus++;
-            connections += "+" + plus + " -" + minus;
-        }
-        return connections;
-    }
 }
