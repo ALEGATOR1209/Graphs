@@ -13,7 +13,8 @@ public class Window extends JFrame {
                 n2 = 4,
                 n3 = 1,
                 n4 = 0;
-    private int matrix = 1;
+    private boolean strong = false;
+    private int matrix = 0;
     private boolean oriented = true;
     private final Font FONT = new Font("Arial", Font.PLAIN, 16);
     Window(String title) {
@@ -27,6 +28,7 @@ public class Window extends JFrame {
             .drawSliders()
             .drawCheckBox()
             .drawWaysButton()
+            .drawStrongCheckBox()
             .createMatrix();
     }
     private void createMatrix() {
@@ -42,8 +44,8 @@ public class Window extends JFrame {
         }
     }
     private Window drawCheckBox() {
-        JCheckBox directed = new JCheckBox("Directed");
-        directed.setSize(100, 50);
+        JCheckBox directed = new JCheckBox("Напрямлений");
+        directed.setSize(140, 50);
         directed.setLocation(670, 350);
         directed.setSelected(this.oriented);
         directed.setFocusable(false);
@@ -96,7 +98,7 @@ public class Window extends JFrame {
         JButton button = new JButton("Шляхи");
         button.setFont(this.FONT);
         button.setSize(100, 30);
-        button.setLocation(800, 360);
+        button.setLocation(810, 360);
         button.setActionCommand("Show Ways Window");
         button.addActionListener(new ButtonListener(matrix, this.oriented));
         this.add(button);
@@ -154,8 +156,9 @@ public class Window extends JFrame {
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
         Graph
-            .fromMatrix(matrix, oriented)
+            .fromMatrix(matrix, oriented, this.strong)
             .circle(550, 300, 270)
+            .showStrong()
             .draw(this);
     }
 
@@ -185,4 +188,18 @@ public class Window extends JFrame {
         this.init();
     }
     public void changeOrientation() { this.oriented = !this.oriented; }
+    public void changeStrong() { this.strong = !this.strong; }
+    private Window drawStrongCheckBox() {
+        JCheckBox strong = new JCheckBox("Компоненти сильної зв'язності");
+        strong.setSize(300, 50);
+        strong.setLocation(670, 300);
+        strong.setSelected(this.strong);
+        strong.setFocusable(false);
+        strong.setFont(this.FONT);
+        strong.setToolTipText("Show or hide strong component.");
+        strong.addItemListener(new StrongChanger(this));
+
+        this.add(strong);
+        return this;
+    }
 }

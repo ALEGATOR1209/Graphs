@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Matrix {
-    public static int[][] multiplyMatrixes(int[][] matrix1, int[][] matrix2) {
+    private static int[][] multiplyMatrixes(int[][] matrix1, int[][] matrix2) {
         int m = matrix1.length;
         int n = matrix2[0].length;
         int[][] result = new int[m][n];
@@ -61,6 +61,7 @@ public class Matrix {
     public static HashMap<Number, int[]> findWays(int[][] matrix, int vortex, int length) {
         HashMap<Number, int[]> ways = new HashMap<>();
         int[] line = matrix[vortex];
+        if (length == 0) return ways;
         if (length == 1) {
             for (int i = 0; i < line.length; i++) {
                 if (line[i] == 1) {
@@ -83,7 +84,6 @@ public class Matrix {
                 }
             }
         }
-
         return ways;
     }
     public static String countConnections(int[][] matrix, int node, boolean oriented) {
@@ -106,5 +106,134 @@ public class Matrix {
             connections += "+" + plus + " -" + minus;
         }
         return connections;
+    }
+    public static int[][] power(int[][] matrix, int power) {
+        if (matrix.length != matrix[0].length) throw new Error("Matrix is not square");
+        if (power == 0) {
+            return Matrix.getAttainabilityMatrix(matrix);
+        }
+        int[][] resMatrix = matrix.clone();
+        for (int i = 1; i < power; i++) resMatrix = Matrix.multiplyMatrixes(resMatrix, matrix);
+        return resMatrix;
+    }
+    private static int[][] getAttainabilityMatrix(int[][] matrix) {
+        int[][] reachability = matrix.clone();
+        int n = matrix.length;
+        for (int i = 1; i < n; i++) {
+            int[][] powered = Matrix.power(matrix.clone(), i);
+            reachability = Matrix.unite(reachability, powered);
+        }
+        return reachability;
+    }
+    private static int[][] and(int[][] matrix1, int[][] matrix2) {
+        int n = matrix1.length;
+        int m = matrix1[0].length;
+        int[][] united = new int[matrix1.length][matrix2.length];
+        for (int i = 0; i < n; i++) for (int j = 0; j < m; j++) {
+            if (matrix1[i][j] > 0 && matrix2[i][j] > 0) {
+                united[i][j] = 1;
+            } else united[i][j] = 0;
+        }
+        return united;
+    }
+    private static int[][] unite(int[][] matrix1, int[][] matrix2) {
+        int n = matrix1.length;
+        int m = matrix1[0].length;
+        int[][] united = new int[matrix1.length][matrix2.length];
+        for (int i = 0; i < n; i++) for (int j = 0; j < m; j++) {
+            if (matrix1[i][j] > 0 || matrix2[i][j] > 0) {
+                united[i][j] = 1;
+            } else united[i][j] = 0;
+        }
+        return united;
+    }
+    public static int[][] getStrongMatrix(int[][] matrix) {
+        int[][] attainability = Matrix.getAttainabilityMatrix(matrix);
+        attainability = Matrix.and(attainability, Matrix.transposition(attainability));
+        return Matrix.unite(Matrix.E(matrix.length), attainability);
+    }
+    private static int[][] transposition(int[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int[][] transponed = new int[n][m];
+        for (int i = 0; i < n; i++) for (int j = 0; j < m; j++) {
+            transponed[j][i] = matrix[i][j];
+        }
+        return transponed;
+    }
+    private static int[][] E(int n) {
+        int[][] E = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+            if (i == j) E[i][j] = 1;
+            else E[i][j] = 0;
+        }
+        return E;
+    }
+    private static int[][] delete(int[][] matrix, int num) {
+        int n = matrix.length;
+        int[][] newMatrix = new int[n - 1][n - 1];
+        int lastI = 0;
+        for (int i = 0; i < n; i++) {
+            if (i != num) {
+                int lastJ = 0;
+                for (int j = 0; j < n; j++) {
+                    if (j != num) {
+                        newMatrix[lastI][lastJ] = matrix[i][j];
+                        lastJ++;
+                    }
+                }
+                lastI++;
+            }
+        }
+        return newMatrix;
+    }
+    private static int count(int[] arr, int n) {
+        int count = 0;
+        for (int value : arr) if (value == n) count++;
+        return count;
+    }
+    private static int[] getNums(int[] arr, int n) {
+        int[] res = new int[Matrix.count(arr, n)];
+        int last = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == n) {
+                res[last] = i;
+                last++;
+            }
+        }
+        return res;
+    }
+    private static int[] getKeys(int[] arr) {
+        int[] res = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = i;
+        }
+        return res;
+    }
+    private static int[] pop(int[] arr, int n) {
+        int[] res = new int[arr.length - 1];
+        for (int i = 0; i < arr.length; i++) {
+            if (i < n) res[i] = arr[i];
+            if (i > n) res[i - 1] = arr[i];
+        }
+        return res;
+    }
+    static HashMap<Number, int[]> getStrongComponents(int[][] matrix) {
+        HashMap<Number, int[]> strongComponents = new HashMap<>();
+        int[][] strongMatrix = Matrix.getStrongMatrix(matrix);
+        int[] live = Matrix.getKeys(matrix[0]);
+        while(strongMatrix.length > 0) {
+            int[] currentStrong = Matrix.getNums(strongMatrix[0], 1);
+            int[] names = new int[currentStrong.length];
+            int removed = 0;
+            for (int i = 0; i < names.length; i++) {
+                names[i] = live[currentStrong[i] - removed];
+                live = Matrix.pop(live, currentStrong[i] - removed);
+                strongMatrix = Matrix.delete(strongMatrix, currentStrong[i] - removed);
+                removed++;
+            }
+            strongComponents.put(strongComponents.size(), names);
+        }
+        return strongComponents;
     }
 }

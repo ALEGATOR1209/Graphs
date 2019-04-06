@@ -3,13 +3,16 @@ package graphs;
 import graphics.Background;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 
 public class Graph {
     boolean directed;
     private HashMap<Number, Node> nodes = new HashMap<>();
+    private boolean strong;
 
-    private Graph(boolean directed) {
+    private Graph(boolean directed, boolean strong) {
+        this.strong = strong;
         this.directed = directed;
     }
     private void add(Node node) {
@@ -25,10 +28,14 @@ public class Graph {
                 node -> node.draw(window)
         );
     }
-    public static Graph fromMatrix(int[][] matrix, boolean directed) {
+    public Graph showStrong() {
+        this.strong = !this.strong;
+        return this;
+    }
+    public static Graph fromMatrix(int[][] matrix, boolean directed, boolean strong) {
         int n = matrix.length;
         Node[] nodes = new Node[n];
-        Graph graph = new Graph(directed);
+        Graph graph = new Graph(directed, strong);
 
         for (int i = 0; i < n; i++) {
             if (matrix[i].length != n)
@@ -39,11 +46,32 @@ public class Graph {
         }
         if (nodes.length <= 0) throw new Error("Matrix is empty.");
 
-        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
             if (matrix[i][j] == 1) {
                 if (!directed && nodes[j].isConnected(nodes[i])) continue;
                 nodes[i].connect(nodes[j]);
             }
+        }
+
+        if (strong) {
+            int k = 0x0;
+            int delta = 0xFFAD5A - 0x85FF5A;
+            String letter = "A";
+            HashMap<Number, int[]> strongComponents = Matrix.getStrongComponents(matrix.clone());
+            for (Number key : strongComponents.keySet()) {
+                int[] component = strongComponents.get(key);
+                for (int node : component) {
+                    Color color = new Color(0xFF5A5A + k * delta);
+                    graph
+                        .nodes
+                        .get(node)
+                        .setColor(color)
+                        .setLetter(letter);
+                }
+                k += 1;
+                letter = letter.replace(letter.charAt(0), (char) (letter.codePointAt(0) + 1));
+            }
+        }
 
         return graph;
     }

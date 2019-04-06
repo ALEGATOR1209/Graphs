@@ -10,12 +10,12 @@ public class WaysWindow extends JFrame {
     private int[][] matrix;
     private final int
         X = 1000,
-        Y = 200,
+        Y = 0,
         WIDTH = 750,
-        HEIGHT = 500,
+        HEIGHT = 1000,
         MAX_LENGTH = 3;
     private int
-        length = 1,
+        length = 0,
         vortex = 0;
     private boolean oriented;
     private final Font FONT = new Font("Arial", Font.PLAIN, 16);
@@ -34,7 +34,9 @@ public class WaysWindow extends JFrame {
             .drawFields()
             .drawWays()
             .drawMatrixLabel()
-            .drawMatrix(50, 200);
+            .drawMatrix(Matrix.power(this.matrix.clone(), this.length),50, 200)
+            .drawStrongMatrixLabel()
+            .drawMatrix(Matrix.getStrongMatrix(this.matrix.clone()), 50, 500);
     }
     private WaysWindow add(JComponent item) {
         this.getContentPane().add(item);
@@ -49,7 +51,7 @@ public class WaysWindow extends JFrame {
 
         Text lengthText = new Text("Довжина: ", 10, 60);
         lengthText.setSize(100, 50);
-        JSlider lengthChooser = new Slider(100, 75, this.length, 1, this.MAX_LENGTH);
+        JSlider lengthChooser = new Slider(100, 75, this.length, 0, this.MAX_LENGTH);
         lengthChooser.setSize(250, 50);
         lengthChooser.addChangeListener(new SliderListener(this, "length"));
 
@@ -102,17 +104,14 @@ public class WaysWindow extends JFrame {
     }
     private WaysWindow drawMatrixLabel() {
         Text matrixLabel = new Text("Матриця суміжності степеня " + this.length, 50, 150);
+        if (this.length == 0) matrixLabel.setText("Матриця досяжності");
         matrixLabel.setSize(300, 50);
         matrixLabel.setFont(new Font("Arial", Font.BOLD , 16));
         this.add(matrixLabel);
         return this;
     }
-    private WaysWindow drawMatrix(int x, int y) {
-        int n = this.matrix.length;
-        int[][] startMatrix = this.matrix;
-        int[][] matrix = this.matrix;
-        for (int i = 1; i < this.length; i++)
-            matrix = Matrix.multiplyMatrixes(matrix, startMatrix);
+    private WaysWindow drawMatrix(int[][] matrix, int x, int y) {
+        int n = matrix.length;
         for (int i = 0; i < n; i++) {
             String valency = Matrix.countConnections(matrix, i, this.oriented);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
@@ -134,6 +133,13 @@ public class WaysWindow extends JFrame {
             string.setFont(this.FONT);
             this.add(string);
         }
+        return this;
+    }
+    private WaysWindow drawStrongMatrixLabel() {
+        Text matrixLabel = new Text("Матриця сильної зв'язності", 50, 450);
+        matrixLabel.setSize(300, 50);
+        matrixLabel.setFont(new Font("Arial", Font.BOLD , 16));
+        this.add(matrixLabel);
         return this;
     }
 }

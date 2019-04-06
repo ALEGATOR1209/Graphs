@@ -6,10 +6,12 @@ import java.util.HashMap;
 import javax.swing.*;
 
 class Node {
-    int x, y, value, id;
+    private int x, y, value, id;
     private Graph graph;
-    int size = 50;
+    private int size = 50;
     private int valency = 0;
+    private String letter = "";
+    private Color color = Color.black;
     private HashMap<Integer, Node> connections = new HashMap<>();
     Node(int x, int y, int value, int id) {
         this.x = x;
@@ -21,7 +23,12 @@ class Node {
         this.x = x;
         this.y = y;
     }
+    void setLetter(String letter) { this.letter = letter; }
     int getId() { return this.id; }
+    Node setColor(Color color) {
+        this.color = color;
+        return this;
+    }
     void connect(Node node) {
         this.connections.put(node.getId(), node);
         this.addValency();
@@ -35,7 +42,10 @@ class Node {
         this.drawConnections(window);
         boolean isolated = this.valency == 0;
         boolean leave = this.valency == 1;
-        Vortex vortex = new Vortex(this.x, this.y, this.size, this.value, isolated, leave);
+        char[] value = this.letter.length() > 0 ?
+            this.letter.toCharArray() :
+            String.valueOf(this.value).toCharArray();
+        Vortex vortex = new Vortex(this.x, this.y, this.size, value, isolated, leave, this.color);
         container.add(vortex);
     }
 
