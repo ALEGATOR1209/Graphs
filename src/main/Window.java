@@ -106,9 +106,13 @@ public class Window extends JFrame {
         if (!this.oriented) this.matrix = 1;
         String previousValency = "";
         boolean homogeneous = true;
+        String letter = "A";
         for (int i = 0; i < n; i++) {
             String valency = Matrix.countConnections(matrix, i, this.oriented);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
+            if (this.condensated) {
+                horizontalNumber.setText(letter);
+            }
             horizontalNumber.setForeground(Color.red);
             horizontalNumber.setToolTipText("Валентність: " + valency);
             this.add(horizontalNumber);
@@ -123,6 +127,10 @@ public class Window extends JFrame {
             Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
             verticalNumber.setForeground(Color.red);
             verticalNumber.setToolTipText("Валентність: " + valency);
+            if (this.condensated) {
+                verticalNumber.setText(letter);
+                letter = letter.replace(letter.charAt(0), (char) (letter.codePointAt(0) + 1));
+            }
             this.add(verticalNumber);
             String connections = "";
             for (int j = 0; j < n; j++)
@@ -153,7 +161,7 @@ public class Window extends JFrame {
     private void drawGraph(int[][] matrix, boolean oriented) {
         Graph
             .fromMatrix(matrix, oriented, this.strong, this.condensated)
-            .circle(550, 300, 270)
+            .circle(300, 300, 280)
             .showStrong()
             .draw(this);
     }

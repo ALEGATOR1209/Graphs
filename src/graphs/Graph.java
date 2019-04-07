@@ -23,7 +23,10 @@ public class Graph {
     public void draw(JFrame window) {
         window
             .getContentPane()
-            .add(new Background(630, 650, 5, 5));
+            .add(new Background(650, 650, 5, 5));
+        this.nodes.values().forEach(
+            node -> node.drawConnections(window)
+        );
         this.nodes.values().forEach(
                 node -> node.draw(window)
         );
@@ -92,10 +95,10 @@ public class Graph {
     }
     public Graph circle(int x, int y, int R) {
         int n = this.nodes.size();
-        int angleStep = (int) Math.floor(360.0 / n);
-        int angle = 0;
+        double angleStep = Math.PI * 2 / n;
+        double angle = 0;
         for (int i = 0; i < n; i++) {
-            int dX = (int) Math.floor(x - R + R * Math.sin(angle));
+            int dX = (int) Math.floor(x + R * Math.sin(angle));
             int dY = (int) Math.floor(y - R * Math.cos(angle));
             this.nodes
                 .get(i)

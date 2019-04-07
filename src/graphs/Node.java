@@ -39,7 +39,6 @@ class Node {
 
     void draw(JFrame window) {
         Container container = window.getContentPane();
-        this.drawConnections(window);
         boolean isolated = this.valency == 0;
         boolean leave = this.valency == 1;
         char[] value = this.letter.length() > 0 ?
@@ -53,7 +52,7 @@ class Node {
         return this.connections.containsKey(node.value);
     }
 
-    private void drawConnections(JFrame window) {
+    void drawConnections(JFrame window) {
         Container container = window.getContentPane();
         this.connections.forEach(
             (key, graph) -> {
@@ -68,21 +67,34 @@ class Node {
                 if (angle != angle) angle = 90;
                 int kx = 1, ky = 1;
                 if (dy > 0 && dx < 0) {
-                    ky = -1;
+                    ky = 1;
                     kx = 1;
                 }
                 if (dy > 0 && dx > 0) {
                     ky = -1;
                     kx = -1;
                 }
+                if (dx > 0 && dy == 0) {
+                    kx = -1;
+                    ky = -1;
+                }
+                if (dx == 0 && dy > 0) {
+                    kx = -1;
+                    ky = -1;
+                }
+                if (dx == 0 && dy < 0) {
+                    kx = 1;
+                    ky = -1;
+                }
                 if (dy < 0 && dx > 0) {
                     kx = -1;
+                    ky = -1;
                 }
 
-                int startX = this.x - kx * (int) Math.floor(this.size / 2.0 * Math.abs(Math.cos(angle)));
-                int startY = this.y - ky * (int) Math.floor(this.size / 2.0 * Math.abs(Math.sin(angle)));
-                int endX = graph.x + kx * (int) Math.floor(graph.size * Math.abs(Math.sin(-180 - angle)) / 2);
-                int endY = graph.y + ky * (int) Math.floor(graph.size * Math.abs(Math.cos(-180 - angle)) / 2);
+                int startX = this.x - kx * (int) Math.floor(this.size / 2.0 * (Math.cos(angle)));
+                int startY = this.y - ky * (int) Math.floor(this.size / 2.0 * (Math.sin(angle)));
+                int endX = graph.x + kx * (int) Math.floor(graph.size * (Math.sin(-180 - angle)) / 2);
+                int endY = graph.y + ky * (int) Math.floor(graph.size * (Math.cos(-180 - angle)) / 2);
 
                 Line line = new Line(startX, startY, endX, endY, this.graph.directed);
                 container.add(line);
