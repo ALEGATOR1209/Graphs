@@ -32,10 +32,11 @@ public class Graph {
         this.strong = !this.strong;
         return this;
     }
-    public static Graph fromMatrix(int[][] matrix, boolean directed, boolean strong) {
+    public static Graph fromMatrix(int[][] matrix, boolean directed, boolean strong, boolean condensated) {
+        Graph graph = new Graph(directed, strong);
+        if (condensated) matrix = Matrix.condensateMatrix(matrix);
         int n = matrix.length;
         Node[] nodes = new Node[n];
-        Graph graph = new Graph(directed, strong);
 
         for (int i = 0; i < n; i++) {
             if (matrix[i].length != n)
@@ -68,7 +69,21 @@ public class Graph {
                         .setColor(color)
                         .setLetter(letter);
                 }
-                k += 1;
+                k++;
+                letter = letter.replace(letter.charAt(0), (char) (letter.codePointAt(0) + 1));
+            }
+        }
+
+        if (condensated)  {
+            int k = 0x0;
+            int delta = 0xFFAD5A - 0x85FF5A;
+            String letter = "A";
+            for (Number num : graph.nodes.keySet()) {
+                Color color = new Color(0xFF5A5A + k * delta);
+                Node node = graph.nodes.get(num);
+                node.setColor(color)
+                    .setLetter(letter);
+                k++;
                 letter = letter.replace(letter.charAt(0), (char) (letter.codePointAt(0) + 1));
             }
         }

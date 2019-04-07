@@ -28,11 +28,14 @@ public class Vortex extends JComponent {
         if (this.color.getRGB() != Color.black.getRGB()) {
             k1 = 10;
             k2 = 5;
+            g.setFont(new Font("Arial", Font.BOLD, 16));
         }
         g.fillOval(this.x - k2, this.y - k2, this.size + k1, this.size + k1);
         g.setColor(Color.white);
-        if (this.leave) g.setColor(Color.green);
-        if (this.isolated) g.setColor(Color.red);
+        if (this.color.getRGB() == Color.black.getRGB()){
+            if (this.leave) g.setColor(Color.green);
+            if (this.isolated) g.setColor(Color.red);
+        }
         g.fillOval(this.x, this.y, this.size, this.size);
         char[] value = this.value;
         int x = -5 + this.x + this.size / 2;

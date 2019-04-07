@@ -169,6 +169,15 @@ public class Matrix {
         }
         return E;
     }
+
+    private static int[][] O(int n) {
+        int[][] O = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+            if (i == j) O[i][j] = 0;
+            else O[i][j] = 1;
+        }
+        return O;
+    }
     private static int[][] delete(int[][] matrix, int num) {
         int n = matrix.length;
         int[][] newMatrix = new int[n - 1][n - 1];
@@ -235,5 +244,24 @@ public class Matrix {
             strongComponents.put(strongComponents.size(), names);
         }
         return strongComponents;
+    }
+    private static boolean checkConnection(int[][] matrix, int[] component1, int[] component2) {
+        for (int a : component1) for (int b : component2)
+            if (matrix[a][b] == 1) return true;
+        return false;
+    }
+    public static int[][] condensateMatrix(int[][] matrix) {
+        HashMap<Number, int[]> strong = Matrix.getStrongComponents(matrix);
+        int[][] condensated = new int[strong.size()][strong.size()];
+        for (Number key : strong.keySet()) {
+            int[] component = strong.get(key);
+            for (Number otherKey : strong.keySet()) {
+                int[] otherComponent = strong.get(otherKey);
+                if (Matrix.checkConnection(matrix, component, otherComponent))
+                    condensated[key.intValue()][otherKey.intValue()] = 1;
+                else condensated[key.intValue()][otherKey.intValue()] = 0;
+            }
+        }
+        return Matrix.and(condensated, Matrix.O(condensated.length));
     }
 }

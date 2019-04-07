@@ -13,6 +13,7 @@ public class Window extends JFrame {
                 n2 = 4,
                 n3 = 1,
                 n4 = 0;
+    private boolean condensated = false;
     private boolean strong = false;
     private int matrix = 0;
     private boolean oriented = true;
@@ -29,24 +30,20 @@ public class Window extends JFrame {
             .drawCheckBox()
             .drawWaysButton()
             .drawStrongCheckBox()
+            .drawCondensationButton()
             .createMatrix();
     }
     private void createMatrix() {
-        if (this.oriented) {
-            int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, false);
-            this.drawMatrix(matrix, 670, 400)
-                .drawGraph(matrix, true);
-        }
-        else {
-            int[][] matrixUndirected = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, true);
-            this.drawMatrix(matrixUndirected, 670, 400)
-                .drawGraph(matrixUndirected, false);
-        }
+        int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, !this.oriented);
+        int[][] condensated = matrix.clone();
+        if (this.condensated) condensated = Matrix.condensateMatrix(condensated);
+        this.drawMatrix(condensated, 670, 450)
+            .drawGraph(matrix, this.oriented);
     }
     private Window drawCheckBox() {
         JCheckBox directed = new JCheckBox("Напрямлений");
         directed.setSize(140, 50);
-        directed.setLocation(670, 350);
+        directed.setLocation(670, 400);
         directed.setSelected(this.oriented);
         directed.setFocusable(false);
         directed.setFont(this.FONT);
@@ -98,7 +95,7 @@ public class Window extends JFrame {
         JButton button = new JButton("Шляхи");
         button.setFont(this.FONT);
         button.setSize(100, 30);
-        button.setLocation(810, 360);
+        button.setLocation(670, 360);
         button.setActionCommand("Show Ways Window");
         button.addActionListener(new ButtonListener(matrix, this.oriented));
         this.add(button);
@@ -149,14 +146,13 @@ public class Window extends JFrame {
         }
         homo.setFont(this.FONT);
         homo.setSize(220, 60);
-        homo.setLocation(x, (n + 2) * 20 + y + 20);
-        this
-            .add(homo);
+        homo.setLocation(x, (n + 1) * 20 + y);
+        this.add(homo);
         return this;
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
         Graph
-            .fromMatrix(matrix, oriented, this.strong)
+            .fromMatrix(matrix, oriented, this.strong, this.condensated)
             .circle(550, 300, 270)
             .showStrong()
             .draw(this);
@@ -199,7 +195,22 @@ public class Window extends JFrame {
         strong.setToolTipText("Show or hide strong component.");
         strong.addItemListener(new StrongChanger(this));
 
+        if (this.condensated) {
+            strong.setSelected(false);
+            strong.setEnabled(false);
+        }
         this.add(strong);
         return this;
     }
+    private Window drawCondensationButton() {
+        JButton button = new JButton(this.condensated ? "Деконденсувати" : "Конденсувати");
+        button.setFont(this.FONT);
+        button.setSize(180, 30);
+        button.setLocation(775, 360);
+        button.setActionCommand("Condensation");
+        button.addActionListener(new ButtonListener(this));
+        this.add(button);
+        return this;
+    }
+    public void changeCondensation() { this.condensated = !this.condensated; }
 }
