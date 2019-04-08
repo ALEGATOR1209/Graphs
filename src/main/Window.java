@@ -1,13 +1,15 @@
 package main;
 
+import graphics.Background;
 import graphs.*;
 import templates.*;
 
 import java.awt.*;
+import java.util.HashMap;
 import javax.swing.*;
 
 public class Window extends JFrame {
-    private int width = 1000, height = 800;
+    private int width = 1000, height = 900;
     private int x = 0, y = 0;
     private int n1 = 8,
                 n2 = 4,
@@ -102,17 +104,18 @@ public class Window extends JFrame {
         return this;
     }
     private Window drawMatrix(int[][] matrix, int x, int y) {
+        HashMap<Number, int[]> strong = Matrix.getStrongComponents(Matrix.getAttainabilityMatrix(matrix.clone()));;
+        Color[] colors = this.generateColors(strong.size());;
+        if (this.matrix == 1) matrix = Matrix.getAttainabilityMatrix(matrix.clone());
+        if (this.matrix == 2) matrix = Matrix.getStrongMatrix(matrix.clone());
         int n = matrix.length;
-        if (!this.oriented) this.matrix = 1;
         String previousValency = "";
         boolean homogeneous = true;
         String letter = "A";
         for (int i = 0; i < n; i++) {
             String valency = Matrix.countConnections(matrix, i, this.oriented);
             Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
-            if (this.condensated) {
-                horizontalNumber.setText(letter);
-            }
+            if (this.condensated) horizontalNumber.setText(letter);
             horizontalNumber.setForeground(Color.red);
             horizontalNumber.setToolTipText("Валентність: " + valency);
             this.add(horizontalNumber);
@@ -141,6 +144,15 @@ public class Window extends JFrame {
             string.setLocation(x + 25, y + 20 * (i + 1));
             string.setFont(this.FONT);
             this.add(string);
+            if (this.strong) {
+                int ллл = 0;
+                for (Number кек : strong.keySet()) for (int лол : strong.get(кек))
+                    if (лол == i) ллл = кек.intValue();
+                this.add(new Background(colors[ллл], 20, 20, x, y + 20 * (i + 1)));
+                this.add(new Background(colors[ллл], 20, 20, 5 + x + 20 * (i + 1), y));
+                verticalNumber.setForeground(Color.white);
+                horizontalNumber.setForeground(Color.white);
+            }
         }
         JLabel homo;
         if (homogeneous) {
@@ -152,10 +164,23 @@ public class Window extends JFrame {
             homo = new JLabel("ГРАФ НЕОДНОРІДНИЙ");
             homo.setForeground(Color.red);
         }
+        if (this.matrix != 0) homo.setVisible(false);
         homo.setFont(this.FONT);
         homo.setSize(220, 60);
-        homo.setLocation(x, (n + 1) * 20 + y);
+        homo.setLocation(x, (n + 4) * 20 + y);
         this.add(homo);
+
+        String text = "Матриця суміжності";
+        if (this.matrix == 1) text = "Матриця досяжності";
+        if (this.matrix == 2) text = "Матриця зв'язності";
+        JLabel matrixText = new Text(text, x, (n + 1) * 20 + 10 + y, 250);
+        matrixText.setFont(new Font("Arial", Font.BOLD, 16));
+        this.add(matrixText);
+
+        JSlider matrixSlider = new Slider(x, y + (n + 2) * 20 + 10, this.matrix, 0, 2);
+        matrixSlider.addChangeListener(new SliderListener(this, "Matrix"));
+        matrixSlider.setPaintLabels(false);
+        this.add(matrixSlider);
         return this;
     }
     private void drawGraph(int[][] matrix, boolean oriented) {
@@ -221,4 +246,10 @@ public class Window extends JFrame {
         return this;
     }
     public void changeCondensation() { this.condensated = !this.condensated; }
+    private Color[] generateColors(int n) {
+        Color[] colors = new Color[n];
+        int delta = 0xFFAD5A - 0x85FF5A;
+        for (int i = 0; i < n; i++) colors[i] = new Color(0xFF5A5A + i * delta);
+        return colors;
+    }
 }

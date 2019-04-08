@@ -12,10 +12,10 @@ public class WaysWindow extends JFrame {
         X = 1000,
         Y = 0,
         WIDTH = 750,
-        HEIGHT = 1000,
+        HEIGHT = 500,
         MAX_LENGTH = 3;
     private int
-        length = 0,
+        length = 1,
         vortex = 0;
     private boolean oriented;
     private final Font FONT = new Font("Arial", Font.PLAIN, 16);
@@ -34,9 +34,7 @@ public class WaysWindow extends JFrame {
             .drawFields()
             .drawWays()
             .drawMatrixLabel()
-            .drawMatrix(Matrix.power(this.matrix.clone(), this.length),50, 200)
-            .drawStrongMatrixLabel()
-            .drawMatrix(Matrix.getStrongMatrix(this.matrix.clone()), 50, 500);
+            .drawMatrix(Matrix.power(this.matrix.clone(), this.length),50, 200);
     }
     private WaysWindow add(JComponent item) {
         this.getContentPane().add(item);
@@ -51,7 +49,7 @@ public class WaysWindow extends JFrame {
 
         Text lengthText = new Text("Довжина: ", 10, 60);
         lengthText.setSize(100, 50);
-        JSlider lengthChooser = new Slider(100, 75, this.length, 0, this.MAX_LENGTH);
+        JSlider lengthChooser = new Slider(100, 75, this.length, 1, this.MAX_LENGTH);
         lengthChooser.setSize(250, 50);
         lengthChooser.addChangeListener(new SliderListener(this, "length"));
 
@@ -110,7 +108,7 @@ public class WaysWindow extends JFrame {
         this.add(matrixLabel);
         return this;
     }
-    private WaysWindow drawMatrix(int[][] matrix, int x, int y) {
+    private void drawMatrix(int[][] matrix, int x, int y) {
         int n = matrix.length;
         for (int i = 0; i < n; i++) {
             String valency = Matrix.countConnections(matrix, i, this.oriented);
@@ -133,13 +131,5 @@ public class WaysWindow extends JFrame {
             string.setFont(this.FONT);
             this.add(string);
         }
-        return this;
-    }
-    private WaysWindow drawStrongMatrixLabel() {
-        Text matrixLabel = new Text("Матриця сильної зв'язності", 50, 450);
-        matrixLabel.setSize(300, 50);
-        matrixLabel.setFont(new Font("Arial", Font.BOLD , 16));
-        this.add(matrixLabel);
-        return this;
     }
 }

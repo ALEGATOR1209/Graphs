@@ -1,16 +1,21 @@
 package templates;
 
-import main.WaysWindow;
+import main.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class SliderListener implements ChangeListener {
-    private WaysWindow window;
+    private WaysWindow waysWindow;
+    private Window window;
     private String type;
-    public SliderListener (WaysWindow window, String type) {
+    public SliderListener (Window window, String type) {
         this.window = window;
+        this.type = type;
+    }
+    public SliderListener (WaysWindow window, String type) {
+        this.waysWindow = window;
         this.type = type;
     }
     public void stateChanged(ChangeEvent e) {
@@ -23,19 +28,27 @@ public class SliderListener implements ChangeListener {
         if (this.type.equals("length")) {
             this.lengthHandler(value);
         }
+        if (this.type.equals("Matrix")) {
+            this.matrixHandler(value);
+        }
     }
     private void vortexHandler(int value) {
-        int oldValue = this.window.getVortex();
+        int oldValue = this.waysWindow.getVortex();
         if (oldValue == value) return;
-        this.window
+        this.waysWindow
             .setVortex(value)
             .redraw();
     }
     private void lengthHandler(int value) {
-        int oldValue = this.window.getLength();
+        int oldValue = this.waysWindow.getLength();
         if (oldValue == value) return;
-        this.window
+        this.waysWindow
             .setLength(value)
+            .redraw();
+    }
+    private void matrixHandler(int value) {
+        this.window
+            .setMatrix(value)
             .redraw();
     }
 }

@@ -109,14 +109,11 @@ public class Matrix {
     }
     public static int[][] power(int[][] matrix, int power) {
         if (matrix.length != matrix[0].length) throw new Error("Matrix is not square");
-        if (power == 0) {
-            return Matrix.getAttainabilityMatrix(matrix);
-        }
         int[][] resMatrix = matrix.clone();
         for (int i = 1; i < power; i++) resMatrix = Matrix.multiplyMatrixes(resMatrix, matrix);
         return resMatrix;
     }
-    private static int[][] getAttainabilityMatrix(int[][] matrix) {
+    public static int[][] getAttainabilityMatrix(int[][] matrix) {
         int[][] reachability = matrix.clone();
         int n = matrix.length;
         for (int i = 1; i < n; i++) {
@@ -227,7 +224,7 @@ public class Matrix {
         }
         return res;
     }
-    static HashMap<Number, int[]> getStrongComponents(int[][] matrix) {
+    public static HashMap<Number, int[]> getStrongComponents(int[][] matrix) {
         HashMap<Number, int[]> strongComponents = new HashMap<>();
         int[][] strongMatrix = Matrix.getStrongMatrix(matrix);
         int[] live = Matrix.getKeys(matrix[0]);
