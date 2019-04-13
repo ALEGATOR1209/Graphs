@@ -1,11 +1,19 @@
 package graphs;
 
 import graphics.*;
+import main.WaysWindow;
+
 import java.awt.*;
 import java.util.HashMap;
 import javax.swing.*;
 
 public class Node {
+    public enum WaysPolicies {
+        DRAW_ALL,
+        FROM_VORTEX_ONLY,
+        TO_VORTEX_ONLY,
+        DEFAULT;
+    }
     private int x, y, value, id;
     private Graph graph;
     private int size = 50;
@@ -14,16 +22,19 @@ public class Node {
     private Color color = Color.black;
     private HashMap<Integer, Node> connections = new HashMap<>();
     private Color connectionColor = Color.black;
+    WaysPolicies drawRepetitiveWays = WaysPolicies.DEFAULT;
     public Node(int x, int y, int value, int id) {
         this.x = x;
         this.y = y;
         this.value = value;
         this.id = id;
     }
-    void setCoordinates(int x, int y) {
+    Node setCoordinates(int x, int y) {
         this.x = x;
         this.y = y;
+        return this;
     }
+    public void setRepetitiveWaysPolicy(WaysPolicies policy) { this.drawRepetitiveWays = policy; }
     public void setLetter(String letter) { this.letter = letter; }
     public int getId() { return this.id; }
     public Node setColor(Color color) {
@@ -50,7 +61,7 @@ public class Node {
     }
 
     boolean isConnected(Node node) {
-        return this.connections.containsKey(node.value);
+        return this.connections.containsKey(node.getId());
     }
 
     void drawConnections(JFrame window) {
@@ -60,6 +71,11 @@ public class Node {
                 if (this.id == graph.getId()) {
                     this.drawSelfArrow(window);
                     return;
+                }
+                if (!this.graph.directed) {
+                    if (drawRepetitiveWays == graph.drawRepetitiveWays && drawRepetitiveWays == WaysPolicies.DEFAULT) {
+                        if (this.id > graph.id) return;
+                    } else if (graph.drawRepetitiveWays == WaysPolicies.FROM_VORTEX_ONLY) return;
                 }
                 int dx = graph.x - this.x;
                 int dy = graph.y - this.y;
@@ -109,4 +125,13 @@ public class Node {
     public HashMap<Integer, Node> getConnections() { return this.connections; }
     public void setConnectionColor(Color color) { this.connectionColor = color; }
     public String getLetter() { return letter; }
+    void locateChilds(int width, int height) {
+        int k = this.x - connections.size() * width / 2;
+        for (Integer key : connections.keySet()) {
+            Node node = connections.get(key);
+            node.setCoordinates(k, y + height);
+            k += width;
+            node.locateChilds(width, height);
+        }
+    }
 }

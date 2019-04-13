@@ -192,6 +192,7 @@ public class Window extends JFrame {
             .circle(300, 300, 280)
             .showStrong()
             .draw(this);
+        this.add(new Background(650, 650, 5, 5));
     }
 
     public int getNumber(int n) {

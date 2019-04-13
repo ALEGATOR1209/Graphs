@@ -1,11 +1,11 @@
 package main;
 
+import graphics.Background;
 import graphs.*;
 import templates.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.security.spec.ECField;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
@@ -18,22 +18,24 @@ public class SearchWindow extends JFrame {
     private final int
         X = 0,
         Y = 0,
-        WIDTH = 1250,
+        WIDTH = 1500,
         HEIGHT = 750;
     private boolean initialization = true;
     private boolean searchType = true;
     private int startVortex = 0;
     private ArrayDeque<Node> activeList = new ArrayDeque<>();
     private ArrayList<Node> exploredList = new ArrayList<>();
-    private Graph graph;
+    private Graph graph, tree;
+    private boolean finish = false;
 
-    public SearchWindow(int[][] matrix, boolean symetric) {
+    public SearchWindow(int[][] matrix, boolean oriented) {
         super("Обхід графу");
         this.matrix = matrix;
         this.setBounds(this.X, this.Y, this.WIDTH, this.HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
-        this.graph = Graph.fromMatrix(matrix, symetric, false, false)
+        this.tree = new Graph(oriented, false);
+        this.graph = Graph.fromMatrix(matrix, oriented, false, false)
             .circle(300, 300, 250);
         this.init();
     }
@@ -44,7 +46,8 @@ public class SearchWindow extends JFrame {
         }
         this.drawGraph()
             .drawNextButton()
-            .drawList();
+            .drawList()
+            .drawTree();
     }
     private SearchWindow add(JComponent comp) {
         this.getContentPane().add(comp);
@@ -110,6 +113,7 @@ public class SearchWindow extends JFrame {
     }
     private SearchWindow drawGraph() {
         this.graph.draw(this);
+        this.add(new Background(Color.white, 650, 650, 5, 5));
         return this;
     }
     private SearchWindow drawNextButton() {
@@ -144,24 +148,38 @@ public class SearchWindow extends JFrame {
             .add(listText);
         return this;
     }
-    public void setNodeColor(Node node, Color color) {
+    private void drawTree() {
+        Text tree = new Text("Дерево обходу", 700, 250);
+        tree.setFont(new Font("Arial", Font.BOLD, 16));
+        tree.setSize(600, 20);
+        this.tree
+            .tree(800, 300)
+            .setColorAll(UNEXPLORED_COLOR)
+            .draw(this);
+        this.add(tree);
+    }
+    private void setNodeColor(Node node, Color color) {
         node.setColor(color);
         node.setConnectionColor(color);
     }
     public SearchWindow exploreNext() {
         if (activeList.size() == 0) {
-            if (exploredList.size() == 0) {
+            if (tree.getNodeCount() == 0) {
                 Node firstVortex = graph.get(startVortex);
                 activeList.add(firstVortex);
                 exploredList.add(firstVortex);
+                tree.add(new Node(0, 0, 0, exploredList.size() - 1));
                 firstVortex.setLetter(exploredList.size() - 1 + "");
                 this.setNodeColor(firstVortex, ACTIVE_COLOR);
+                firstVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.FROM_VORTEX_ONLY);
             } else {
-                if (exploredList.size() == graph.getNodeCount()) {
-                    System.out.println("Search finished.");
+                if (tree.getNodeCount() == graph.getNodeCount()) {
                     graph
                         .setColorAll(EXPLORED_COLOR)
+                        .setPoliciesAll(Node.WaysPolicies.DEFAULT)
                         .setConnectionsColorAll(Color.BLACK);
+                    this.finish = true;
+                    redraw();
                     return this;
                 }
                 for (int i = 0; i < graph.getNodeCount(); i++) {
@@ -171,6 +189,7 @@ public class SearchWindow extends JFrame {
                     exploredList.add(currentNode);
                     currentNode.setLetter(exploredList.size() - 1 + "");
                     this.setNodeColor(currentNode, ACTIVE_COLOR);
+                    currentNode.setRepetitiveWaysPolicy(Node.WaysPolicies.FROM_VORTEX_ONLY);
                     break;
                 }
             }
@@ -193,19 +212,24 @@ public class SearchWindow extends JFrame {
                 }
                 newVortex = searchType ? activeList.getLast() : activeList.getFirst();
                 this.setNodeColor(newVortex, ACTIVE_COLOR);
+                newVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.FROM_VORTEX_ONLY);
                 this.setNodeColor(activeVortex, EXPLORED_COLOR);
+                activeVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.DEFAULT);
                 redraw();
                 return this;
             }
             if (searchType) {
                 this.setNodeColor(newVortex, ACTIVE_COLOR);
+                newVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.FROM_VORTEX_ONLY);
                 this.setNodeColor(activeVortex, EXPLORED_COLOR);
+                activeVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.DEFAULT);
             }
             else {
                 this.setNodeColor(newVortex, EXPLORED_COLOR);
             }
             exploredList.add(newVortex);
             newVortex.setLetter(exploredList.size() - 1 + "");
+            tree.add(new Node(0, 0, 0, exploredList.size() - 1));
             activeList.add(newVortex);
         }
 

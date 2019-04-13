@@ -4,14 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Background extends  JComponent {
-    private int x = 0, y  = 0, width = 0, height = 0;
+    private int x, y, width, height;
     private Color color = Color.black;
     public Background (int width, int height, int x, int y) {
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
-        this.setSize(1000, 1000);
+        this.setSize(width, height);
     }
     public Background (Color color, int width, int height, int x, int y) {
         this.width = width;
@@ -19,7 +19,7 @@ public class Background extends  JComponent {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.setSize(1000, 1000);
+        this.setSize(width, height);
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

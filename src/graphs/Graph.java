@@ -1,7 +1,5 @@
 package graphs;
 
-import graphics.Background;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -11,19 +9,16 @@ public class Graph {
     private HashMap<Number, Node> nodes = new HashMap<>();
     private boolean strong;
 
-    private Graph(boolean directed, boolean strong) {
+    public Graph(boolean directed, boolean strong) {
         this.strong = strong;
         this.directed = directed;
     }
-    private void add(Node node) {
+    public void add(Node node) {
         Number num = node.getId();
         this.nodes.put(num, node);
         node.setGraph(this);
     }
     public void draw(JFrame window) {
-        window
-            .getContentPane()
-            .add(new Background(650, 650, 5, 5));
         this.nodes.values().forEach(
             node -> node.drawConnections(window)
         );
@@ -52,7 +47,6 @@ public class Graph {
 
         for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
             if (matrix[i][j] == 1) {
-                if (!directed && nodes[j].isConnected(nodes[i])) continue;
                 nodes[i].connect(nodes[j]);
             }
         }
@@ -107,6 +101,20 @@ public class Graph {
         }
         return this;
     }
+    public Graph tree(int x, int y) {
+        HashMap<Number, Node> roots = new HashMap<>();
+        for (Number key : nodes.keySet()) {
+            if (!this.hasInputWays(key.intValue())) roots.put(key, nodes.get(key));
+        }
+        int k = 0;
+        for (Number root : roots.keySet()) {
+            roots.get(root)
+                .setCoordinates(x + 60 * k - roots.size() * (k - 1), y)
+                .locateChilds(75, 50);
+            k++;
+        }
+        return this;
+    }
     public Node get(int id) {
         return this.nodes.get(id);
     }
@@ -114,9 +122,19 @@ public class Graph {
         this.nodes.forEach((k, node) -> node.setColor(color));
         return this;
     }
-    public Graph setConnectionsColorAll(Color color) {
+    public void setConnectionsColorAll(Color color) {
         this.nodes.forEach((k, node) -> node.setConnectionColor(color));
+    }
+    public Graph setPoliciesAll(Node.WaysPolicies policy) {
+        this.nodes.forEach((k, node) -> node.setRepetitiveWaysPolicy(policy));
         return this;
     }
     public int getNodeCount() { return this.nodes.size(); }
+    public boolean hasInputWays(int id) {
+        Node node = nodes.get(id);
+        for (Number key : nodes.keySet()) {
+            if (nodes.get(key).isConnected(node)) return true;
+        }
+        return false;
+    }
 }
