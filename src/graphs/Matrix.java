@@ -55,7 +55,7 @@ public class Matrix {
     }
 
     private static double getRandomElement(Random random, int n3, int n4) {
-        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.01 - 0.3);
+        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.005 - 0.15);
     }
 
     public static HashMap<Number, int[]> findWays(int[][] matrix, int vortex, int length) {

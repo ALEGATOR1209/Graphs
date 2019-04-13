@@ -8,6 +8,7 @@ import javax.swing.event.ChangeListener;
 
 public class SliderListener implements ChangeListener {
     private WaysWindow waysWindow;
+    private SearchWindow searchWindow;
     private Window window;
     private String type;
     public SliderListener (Window window, String type) {
@@ -16,6 +17,10 @@ public class SliderListener implements ChangeListener {
     }
     public SliderListener (WaysWindow window, String type) {
         this.waysWindow = window;
+        this.type = type;
+    }
+    public SliderListener (SearchWindow window, String type) {
+        this.searchWindow = window;
         this.type = type;
     }
     public void stateChanged(ChangeEvent e) {
@@ -30,6 +35,9 @@ public class SliderListener implements ChangeListener {
         }
         if (this.type.equals("Matrix")) {
             this.matrixHandler(value);
+        }
+        if (this.type.equals("Search")) {
+            this.searchHandler(value);
         }
     }
     private void vortexHandler(int value) {
@@ -49,6 +57,11 @@ public class SliderListener implements ChangeListener {
     private void matrixHandler(int value) {
         this.window
             .setMatrix(value)
+            .redraw();
+    }
+    private void searchHandler(int value) {
+        this.searchWindow
+            .setStart(value)
             .redraw();
     }
 }

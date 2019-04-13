@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.HashMap;
 import javax.swing.*;
 
-class Node {
+public class Node {
     private int x, y, value, id;
     private Graph graph;
     private int size = 50;
@@ -13,7 +13,8 @@ class Node {
     private String letter = "";
     private Color color = Color.black;
     private HashMap<Integer, Node> connections = new HashMap<>();
-    Node(int x, int y, int value, int id) {
+    private Color connectionColor = Color.black;
+    public Node(int x, int y, int value, int id) {
         this.x = x;
         this.y = y;
         this.value = value;
@@ -23,9 +24,9 @@ class Node {
         this.x = x;
         this.y = y;
     }
-    void setLetter(String letter) { this.letter = letter; }
-    int getId() { return this.id; }
-    Node setColor(Color color) {
+    public void setLetter(String letter) { this.letter = letter; }
+    public int getId() { return this.id; }
+    public Node setColor(Color color) {
         this.color = color;
         return this;
     }
@@ -96,7 +97,7 @@ class Node {
                 int endX = graph.x + kx * (int) Math.floor(graph.size * (Math.sin(-180 - angle)) / 2);
                 int endY = graph.y + ky * (int) Math.floor(graph.size * (Math.cos(-180 - angle)) / 2);
 
-                Line line = new Line(startX, startY, endX, endY, this.graph.directed);
+                Line line = new Line(startX, startY, endX, endY, this.graph.directed, connectionColor);
                 container.add(line);
             }
         );
@@ -105,4 +106,7 @@ class Node {
         Arc arc = new Arc(this.x, this.y);
         window.getContentPane().add(arc);
     }
+    public HashMap<Integer, Node> getConnections() { return this.connections; }
+    public void setConnectionColor(Color color) { this.connectionColor = color; }
+    public String getLetter() { return letter; }
 }

@@ -6,12 +6,14 @@ import java.awt.*;
 public class Line extends JComponent {
     private int startX, startY, endX, endY;
     private boolean arrow;
+    private Color color;
 
-    public Line(int startX, int startY, int endX, int endY, boolean arrow) {
+    public Line(int startX, int startY, int endX, int endY, boolean arrow, Color color) {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
         this.arrow = arrow;
         this.setSize(1000, 1000);
+        this.color = color;
     }
 
     public void paintComponent(Graphics g) {
@@ -20,6 +22,7 @@ public class Line extends JComponent {
         int startY = this.startY + 25;
         int endX = this.endX + 25;
         int endY = this.endY + 25;
+        g.setColor(color);
         g.drawLine(startX, startY, endX, endY);
 
         if (!this.arrow) return;

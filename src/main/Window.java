@@ -39,20 +39,23 @@ public class Window extends JFrame {
         int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, !this.oriented);
         int[][] condensated = matrix.clone();
         if (this.condensated) condensated = Matrix.condensateMatrix(condensated);
-        this.drawMatrix(condensated, 670, 450)
+        this
+            .drawGraphSearchButton(matrix)
+            .drawMatrix(condensated, 670, 500)
             .drawGraph(matrix, this.oriented);
     }
     private Window drawCheckBox() {
         JCheckBox directed = new JCheckBox("Напрямлений");
-        directed.setSize(140, 50);
-        directed.setLocation(670, 400);
+        directed.setSize(140, 30);
+        directed.setLocation(670, 450);
         directed.setSelected(this.oriented);
         directed.setFocusable(false);
         directed.setFont(this.FONT);
         directed.setToolTipText("Change directed graph to undirected.");
         directed.addItemListener(new GraphChanger(this));
 
-        this.getContentPane().add(directed);
+        this.
+            add(directed);
         return this;
     }
     private Window drawSliders() {
@@ -251,5 +254,15 @@ public class Window extends JFrame {
         int delta = 0xFFAD5A - 0x85FF5A;
         for (int i = 0; i < n; i++) colors[i] = new Color(0xFF5A5A + i * delta);
         return colors;
+    }
+    private Window drawGraphSearchButton(int[][] matrix) {
+        JButton button = new JButton("Обхід графа");
+        button.setFont(this.FONT);
+        button.setSize(285, 30);
+        button.setLocation(670, 400);
+        button.setActionCommand("Search");
+        button.addActionListener(new ButtonListener(matrix, this.oriented));
+        this.add(button);
+        return this;
     }
 }

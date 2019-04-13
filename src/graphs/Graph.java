@@ -107,4 +107,16 @@ public class Graph {
         }
         return this;
     }
+    public Node get(int id) {
+        return this.nodes.get(id);
+    }
+    public Graph setColorAll(Color color) {
+        this.nodes.forEach((k, node) -> node.setColor(color));
+        return this;
+    }
+    public Graph setConnectionsColorAll(Color color) {
+        this.nodes.forEach((k, node) -> node.setConnectionColor(color));
+        return this;
+    }
+    public int getNodeCount() { return this.nodes.size(); }
 }
