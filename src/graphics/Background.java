@@ -11,7 +11,7 @@ public class Background extends  JComponent {
         this.height = height;
         this.x = x;
         this.y = y;
-        this.setSize(width, height);
+        this.setSize(x + width, y + height);
     }
     public Background (Color color, int width, int height, int x, int y) {
         this.width = width;

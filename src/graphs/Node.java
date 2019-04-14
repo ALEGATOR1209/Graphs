@@ -1,7 +1,6 @@
 package graphs;
 
 import graphics.*;
-import main.WaysWindow;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -9,10 +8,8 @@ import javax.swing.*;
 
 public class Node {
     public enum WaysPolicies {
-        DRAW_ALL,
         FROM_VORTEX_ONLY,
-        TO_VORTEX_ONLY,
-        DEFAULT;
+        DEFAULT
     }
     private int x, y, value, id;
     private Graph graph;
@@ -22,7 +19,7 @@ public class Node {
     private Color color = Color.black;
     private HashMap<Integer, Node> connections = new HashMap<>();
     private Color connectionColor = Color.black;
-    WaysPolicies drawRepetitiveWays = WaysPolicies.DEFAULT;
+    private WaysPolicies drawRepetitiveWays = WaysPolicies.DEFAULT;
     public Node(int x, int y, int value, int id) {
         this.x = x;
         this.y = y;
@@ -36,12 +33,12 @@ public class Node {
     }
     public void setRepetitiveWaysPolicy(WaysPolicies policy) { this.drawRepetitiveWays = policy; }
     public void setLetter(String letter) { this.letter = letter; }
-    public int getId() { return this.id; }
+    int getId() { return this.id; }
     public Node setColor(Color color) {
         this.color = color;
         return this;
     }
-    void connect(Node node) {
+    public void connect(Node node) {
         this.connections.put(node.getId(), node);
         this.addValency();
         node.addValency();
@@ -125,13 +122,28 @@ public class Node {
     public HashMap<Integer, Node> getConnections() { return this.connections; }
     public void setConnectionColor(Color color) { this.connectionColor = color; }
     public String getLetter() { return letter; }
-    void locateChilds(int width, int height) {
+    void locateChilds(int width, int height, boolean type) {
         int k = this.x - connections.size() * width / 2;
+        if (connections.size() == 1) {
+            if (type) connections.forEach((n, node) -> node
+                .setCoordinates(x + width, y)
+                .locateChilds(width, height, true)
+            );
+            else connections.forEach((n, node) -> node
+                .setCoordinates(x, y + height)
+                .locateChilds(width, height, false)
+            );
+            return;
+        }
         for (Integer key : connections.keySet()) {
             Node node = connections.get(key);
             node.setCoordinates(k, y + height);
             k += width;
-            node.locateChilds(width, height);
+            node.locateChilds(width, height, type);
         }
+    }
+    int getChildrenCount() {
+        if (connections.size() == 0) return 0;
+        return connections.size();
     }
 }

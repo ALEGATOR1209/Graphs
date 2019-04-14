@@ -101,16 +101,16 @@ public class Graph {
         }
         return this;
     }
-    public Graph tree(int x, int y) {
+    public Graph tree(int x, int y, boolean type) {
         HashMap<Number, Node> roots = new HashMap<>();
         for (Number key : nodes.keySet()) {
             if (!this.hasInputWays(key.intValue())) roots.put(key, nodes.get(key));
         }
-        int k = 0;
+        int k = 1;
         for (Number root : roots.keySet()) {
             roots.get(root)
-                .setCoordinates(x + 60 * k - roots.size() * (k - 1), y)
-                .locateChilds(75, 50);
+                .setCoordinates(x + 75 * k + roots.get(root).getChildrenCount() * (k + 2), y)
+                .locateChilds(75, 75, type);
             k++;
         }
         return this;
@@ -130,7 +130,7 @@ public class Graph {
         return this;
     }
     public int getNodeCount() { return this.nodes.size(); }
-    public boolean hasInputWays(int id) {
+    private boolean hasInputWays(int id) {
         Node node = nodes.get(id);
         for (Number key : nodes.keySet()) {
             if (nodes.get(key).isConnected(node)) return true;

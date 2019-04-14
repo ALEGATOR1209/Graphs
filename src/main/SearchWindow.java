@@ -26,7 +26,6 @@ public class SearchWindow extends JFrame {
     private ArrayDeque<Node> activeList = new ArrayDeque<>();
     private ArrayList<Node> exploredList = new ArrayList<>();
     private Graph graph, tree;
-    private boolean finish = false;
 
     public SearchWindow(int[][] matrix, boolean oriented) {
         super("Обхід графу");
@@ -136,7 +135,7 @@ public class SearchWindow extends JFrame {
         else {
             ArrayDeque<Node> cloneList = activeList.clone();
             for (int i = 0; i < activeList.size(); i++) {
-                list = list + " " + cloneList.pop().getLetter();
+                list = list.concat(" " + cloneList.pop().getLetter());
             }
         }
 
@@ -153,8 +152,8 @@ public class SearchWindow extends JFrame {
         tree.setFont(new Font("Arial", Font.BOLD, 16));
         tree.setSize(600, 20);
         this.tree
-            .tree(800, 300)
-            .setColorAll(UNEXPLORED_COLOR)
+            .tree(searchType ? 700 : 1000, 300, searchType)
+            .setColorAll(EXPLORED_COLOR)
             .draw(this);
         this.add(tree);
     }
@@ -168,7 +167,7 @@ public class SearchWindow extends JFrame {
                 Node firstVortex = graph.get(startVortex);
                 activeList.add(firstVortex);
                 exploredList.add(firstVortex);
-                tree.add(new Node(0, 0, 0, exploredList.size() - 1));
+                tree.add(new Node(0, 0, exploredList.size() - 1, exploredList.size() - 1));
                 firstVortex.setLetter(exploredList.size() - 1 + "");
                 this.setNodeColor(firstVortex, ACTIVE_COLOR);
                 firstVortex.setRepetitiveWaysPolicy(Node.WaysPolicies.FROM_VORTEX_ONLY);
@@ -178,7 +177,6 @@ public class SearchWindow extends JFrame {
                         .setColorAll(EXPLORED_COLOR)
                         .setPoliciesAll(Node.WaysPolicies.DEFAULT)
                         .setConnectionsColorAll(Color.BLACK);
-                    this.finish = true;
                     redraw();
                     return this;
                 }
@@ -229,7 +227,11 @@ public class SearchWindow extends JFrame {
             }
             exploredList.add(newVortex);
             newVortex.setLetter(exploredList.size() - 1 + "");
-            tree.add(new Node(0, 0, 0, exploredList.size() - 1));
+            Node node = new Node(0, 0, exploredList.size() - 1, exploredList.size() - 1);
+            tree
+                .get(Integer.parseInt(activeVortex.getLetter()))
+                .connect(node);
+            tree.add(node);
             activeList.add(newVortex);
         }
 

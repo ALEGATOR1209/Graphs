@@ -12,7 +12,7 @@ public class Line extends JComponent {
         this.startX = startX; this.startY = startY;
         this.endX = endX; this.endY = endY;
         this.arrow = arrow;
-        this.setSize(1000, 1000);
+        this.setSize(10000, 10000);
         this.color = color;
     }
 
@@ -75,7 +75,6 @@ public class Line extends JComponent {
         rightWindX = (int) Math.floor(coordinates[0]);
         rightWindY = (int) Math.floor(coordinates[1]);
 
-        int[] res = {leftWindX, leftWindY, rightWindX, rightWindY};
-        return res;
+        return new int[]{leftWindX, leftWindY, rightWindX, rightWindY};
     }
 }

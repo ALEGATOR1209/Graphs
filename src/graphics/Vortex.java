@@ -15,7 +15,7 @@ public class Vortex extends JComponent {
         this.color = color;
         this.size = size;
         this.value = value;
-        this.setSize(1000, 1000);
+        this.setSize(x * size, y * size);
         this.isolated = isolated;
         this.leave = leave;
     }
