@@ -32,7 +32,10 @@ public class Node {
         return this;
     }
     public void setRepetitiveWaysPolicy(WaysPolicies policy) { this.drawRepetitiveWays = policy; }
-    public void setLetter(String letter) { this.letter = letter; }
+    public Node setLetter(String letter) {
+        this.letter = letter;
+        return this;
+    }
     int getId() { return this.id; }
     public Node setColor(Color color) {
         this.color = color;
@@ -53,6 +56,17 @@ public class Node {
         char[] value = this.letter.length() > 0 ?
             this.letter.toCharArray() :
             String.valueOf(this.value).toCharArray();
+        Vortex vortex = new Vortex(this.x, this.y, this.size, value, isolated, leave, this.color);
+        container.add(vortex);
+    }
+    void draw(JFrame window, boolean labels) {
+        Container container = window.getContentPane();
+        boolean isolated = this.valency == 0;
+        boolean leave = this.valency == 1;
+        char[] value = this.letter.length() > 0 ?
+            this.letter.toCharArray() :
+            String.valueOf(this.value).toCharArray();
+        if (!labels) value = String.valueOf(this.value).toCharArray();
         Vortex vortex = new Vortex(this.x, this.y, this.size, value, isolated, leave, this.color);
         container.add(vortex);
     }

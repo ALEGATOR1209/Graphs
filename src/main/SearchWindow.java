@@ -19,9 +19,11 @@ public class SearchWindow extends JFrame {
         X = 0,
         Y = 0,
         WIDTH = 1500,
-        HEIGHT = 750;
-    private boolean initialization = true;
-    private boolean searchType = true;
+        HEIGHT = 1000;
+    private boolean
+        initialization = true,
+        searchType = true,
+        finish = false;
     private int startVortex = 0;
     private ArrayDeque<Node> activeList = new ArrayDeque<>();
     private ArrayList<Node> exploredList = new ArrayList<>();
@@ -31,7 +33,7 @@ public class SearchWindow extends JFrame {
         super("Обхід графу");
         this.matrix = matrix;
         this.setBounds(this.X, this.Y, this.WIDTH, this.HEIGHT);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         this.getContentPane().setLayout(null);
         this.tree = new Graph(oriented, false);
         this.graph = Graph.fromMatrix(matrix, oriented, false, false)
@@ -43,10 +45,18 @@ public class SearchWindow extends JFrame {
             drawInitComponents();
             return;
         }
+        if (this.finish) {
+            drawFinishScreen();
+            return;
+        }
         this.drawGraph()
+            .add(new Background(Color.white, 650, 650, 5, 5))
             .drawNextButton()
             .drawList()
-            .drawTree();
+            .drawTree(700, 400);
+        if (tree.getNodeCount() > 0) this
+            .drawLabel("Матриця дерева обходу", 1000, 150)
+            .drawMatrix(this.tree.toMatrix(), 1000, 200);
     }
     private SearchWindow add(JComponent comp) {
         this.getContentPane().add(comp);
@@ -87,7 +97,19 @@ public class SearchWindow extends JFrame {
             .add(width)
             .add(height)
             .add(start)
-            .drawGraph();
+            .drawGraph()
+            .add(new Background(Color.white, 650, 650, 5, 5));
+    }
+    private void drawFinishScreen() {
+        this
+            .drawTree(50, 650)
+            .drawLabel("Матриця дерева обходу", 800, 75)
+            .drawMatrix(tree.toMatrix(), 800, 125)
+            .drawNewSearchButton()
+            .drawLabel("Матриця відповідності вершин", 800, 450)
+            .drawMatrix(graph.toIdLabelMatrix(), 800, 470, "labels");
+        this.graph.draw(this, false);
+        this.add(new Background(Color.white,700, 1000, 5, 5));
     }
     public SearchWindow setSearchType(boolean searchType) {
         this.searchType = searchType;
@@ -112,7 +134,6 @@ public class SearchWindow extends JFrame {
     }
     private SearchWindow drawGraph() {
         this.graph.draw(this);
-        this.add(new Background(Color.white, 650, 650, 5, 5));
         return this;
     }
     private SearchWindow drawNextButton() {
@@ -147,15 +168,16 @@ public class SearchWindow extends JFrame {
             .add(listText);
         return this;
     }
-    private void drawTree() {
-        Text tree = new Text("Дерево обходу", 700, 250);
+    private SearchWindow drawTree(int x, int y) {
+        Text tree = new Text("Дерево обходу", x, y);
         tree.setFont(new Font("Arial", Font.BOLD, 16));
         tree.setSize(600, 20);
         this.tree
-            .tree(searchType ? 700 : 1000, 300, searchType)
+            .tree(searchType ? x : x + 300, y + 50, searchType)
             .setColorAll(EXPLORED_COLOR)
             .draw(this);
         this.add(tree);
+        return this;
     }
     private void setNodeColor(Node node, Color color) {
         node.setColor(color);
@@ -177,6 +199,7 @@ public class SearchWindow extends JFrame {
                         .setColorAll(EXPLORED_COLOR)
                         .setPoliciesAll(Node.WaysPolicies.DEFAULT)
                         .setConnectionsColorAll(Color.BLACK);
+                    this.finish = true;
                     redraw();
                     return this;
                 }
@@ -236,6 +259,71 @@ public class SearchWindow extends JFrame {
         }
 
         redraw();
+        return this;
+    }
+    private SearchWindow drawLabel(String text, int x, int y) {
+        Text label = new Text(text, x, y);
+        label.setSize(text.length() * 10, 20);
+        this.add(label);
+        return this;
+    }
+    private SearchWindow drawMatrix(int[][] matrix, int x, int y, String options) {
+        if (matrix.length == 0) return this;
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            if (!options.equals("labels")) {
+                Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
+                horizontalNumber.setForeground(Color.red);
+                this.add(horizontalNumber);
+                Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
+                verticalNumber.setForeground(Color.red);
+                this.add(verticalNumber);
+            }
+
+            String connections = "";
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (options.equals("labels"))
+                    if (j > 0) connections = connections.concat(" -> " + matrix[i][j]);
+                    else connections = connections.concat("" + matrix[i][j]);
+                else connections = connections.concat("  " + matrix[i][j]);
+            }
+            connections = connections.trim();
+            JLabel string = new JLabel(connections);
+            string.setSize(220, 20);
+            string.setLocation(x + 25, y + 20 * (i + 1));
+            string.setFont(new Font("Arial", Font.PLAIN, 16));
+            this.add(string);
+        }
+        return this;
+    }
+    private SearchWindow drawMatrix(int[][] matrix, int x, int y) {
+        if (matrix.length == 0) return this;
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            Text horizontalNumber = new Text(i + "", 5 + x + 20 * (i + 1), y, 20);
+            horizontalNumber.setForeground(Color.red);
+            this.add(horizontalNumber);
+            Text verticalNumber = new Text(i + "", x, y + 20 * (i + 1));
+            verticalNumber.setForeground(Color.red);
+            this.add(verticalNumber);
+
+            String connections = "";
+            for (int j = 0; j < matrix[i].length; j++)
+                connections = connections.concat("  " + matrix[i][j]);
+            connections = connections.trim();
+            JLabel string = new JLabel(connections);
+            string.setSize(220, 20);
+            string.setLocation(x + 25, y + 20 * (i + 1));
+            string.setFont(new Font("Arial", Font.PLAIN, 16));
+            this.add(string);
+        }
+        return this;
+    }
+    private SearchWindow drawNewSearchButton() {
+        JButton button = new JButton("Обійти ще раз");
+        button.setSize(400, 50);
+        button.setLocation(800, 5);
+        this.add(button);
         return this;
     }
 }

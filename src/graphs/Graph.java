@@ -26,6 +26,14 @@ public class Graph {
                 node -> node.draw(window)
         );
     }
+    public void draw(JFrame window, boolean labels) {
+        this.nodes.values().forEach(
+            node -> node.drawConnections(window)
+        );
+        this.nodes.values().forEach(
+            node -> node.draw(window, labels)
+        );
+    }
     public Graph showStrong() {
         this.strong = !this.strong;
         return this;
@@ -136,5 +144,39 @@ public class Graph {
             if (nodes.get(key).isConnected(node)) return true;
         }
         return false;
+    }
+    public int[][] toMatrix() {
+        int n = nodes.size();
+        if (n == 0) return new int[0][0];
+        int[][] matrix = new int[n][n];
+
+        for (Number key1 : nodes.keySet()) for (Number key2 : nodes.keySet()) {
+            Node node1 = nodes.get(key1);
+            Node node2 = nodes.get(key2);
+            if (node1.isConnected(node2)) {
+                matrix[node1.getId()][node2.getId()] = 1;
+            } else matrix[node1.getId()][node2.getId()] = 0;
+        }
+
+        return matrix;
+    }
+    public int[][] toIdLabelMatrix() {
+        int n = nodes.size();
+        if (n == 0) return new int[0][0];
+        int[][] matrix = new int[n][2];
+
+        for (Number key : nodes.keySet()) {
+            Node node = nodes.get(key);
+            int id = node.getId();
+            String letter = node.getLetter();
+            matrix[id][0] = id;
+            matrix[id][1] = (int) Double.parseDouble(letter);
+        }
+
+        return matrix;
+    }
+    public Graph removeLabelAll() {
+        this.nodes.forEach((k, node) -> node.setLetter(node.getId() + ""));
+        return this;
     }
 }
