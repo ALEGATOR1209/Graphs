@@ -38,6 +38,11 @@ public class ButtonListener implements ActionListener {
                 .setSearchType(false)
                 .redraw();
         }
+        if ("Height".equals(e.getActionCommand())) {
+            this.searchWindow
+                .setSearchType(true)
+                .redraw();
+        }
         if ("Start Search".equals(e.getActionCommand())) {
             this.searchWindow
                 .startSearch()
@@ -46,6 +51,11 @@ public class ButtonListener implements ActionListener {
         if ("Next Vortex".equals(e.getActionCommand())) {
             this.searchWindow
                 .exploreNext()
+                .redraw();
+        }
+        if ("New Search".equals(e.getActionCommand())) {
+            this.searchWindow
+                .newSearch()
                 .redraw();
         }
     }

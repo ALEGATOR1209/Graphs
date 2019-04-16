@@ -22,11 +22,12 @@ public class SearchWindow extends JFrame {
         HEIGHT = 1000;
     private boolean
         initialization = true,
-        searchType = true,
-        finish = false;
+        searchType = false,
+        finish = false,
+        oriented;
     private int startVortex = 0;
-    private ArrayDeque<Node> activeList = new ArrayDeque<>();
-    private ArrayList<Node> exploredList = new ArrayList<>();
+    private ArrayDeque<Node> activeList;
+    private ArrayList<Node> exploredList;
     private Graph graph, tree;
 
     public SearchWindow(int[][] matrix, boolean oriented) {
@@ -35,9 +36,7 @@ public class SearchWindow extends JFrame {
         this.setBounds(this.X, this.Y, this.WIDTH, this.HEIGHT);
         this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         this.getContentPane().setLayout(null);
-        this.tree = new Graph(oriented, false);
-        this.graph = Graph.fromMatrix(matrix, oriented, false, false)
-            .circle(300, 300, 250);
+        this.oriented = oriented;
         this.init();
     }
     private void init() {
@@ -63,6 +62,12 @@ public class SearchWindow extends JFrame {
         return this;
     }
     private void drawInitComponents() {
+        this.tree = new Graph(oriented, false);
+        this.graph = Graph.fromMatrix(matrix, oriented, false, false)
+            .circle(300, 300, 250);
+        activeList = new ArrayDeque<>();
+        exploredList = new ArrayList<>();
+
         Text text = new Text(18, "Оберіть параметри обходу графа:", 700, 5);
         text.setSize(750, 30);
         Text startPoint = new Text("Стартова вершина: ", 700, 50);
@@ -73,13 +78,15 @@ public class SearchWindow extends JFrame {
         Text type = new Text("Тип обходу: ", 700, 125);
         type.setSize(150, 30);
         JRadioButton width = new JRadioButton("У ширину");
-        width.setLocation(800, 120);
+        width.setLocation(850, 120);
         width.setSize(100, 40);
         width.setActionCommand("Width");
         width.addActionListener(new ButtonListener(this));
         JRadioButton height = new JRadioButton("У висоту");
         height.setLocation(950, 120);
         height.setSize(100, 40);
+        height.setActionCommand("Height");
+        height.addActionListener(new ButtonListener(this));
         ButtonGroup group = new ButtonGroup();
         group.add(width); group.add(height);
         group.setSelected(this.searchType ? height.getModel() : width.getModel(), true);
@@ -102,7 +109,7 @@ public class SearchWindow extends JFrame {
     }
     private void drawFinishScreen() {
         this
-            .drawTree(50, 650)
+            .drawTree(50, 600)
             .drawLabel("Матриця дерева обходу", 800, 75)
             .drawMatrix(tree.toMatrix(), 800, 125)
             .drawNewSearchButton()
@@ -321,9 +328,17 @@ public class SearchWindow extends JFrame {
     }
     private SearchWindow drawNewSearchButton() {
         JButton button = new JButton("Обійти ще раз");
+        button.setFont(new Font("Arial", Font.BOLD, 18));
         button.setSize(400, 50);
         button.setLocation(800, 5);
+        button.setActionCommand("New Search");
+        button.addActionListener(new ButtonListener(this));
         this.add(button);
+        return this;
+    }
+    public SearchWindow newSearch() {
+        this.initialization = true;
+        this.finish = false;
         return this;
     }
 }
