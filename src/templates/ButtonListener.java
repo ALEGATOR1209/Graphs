@@ -10,6 +10,7 @@ public class ButtonListener implements ActionListener {
     private boolean oriented = true;
     private Window window;
     private SearchWindow searchWindow;
+    private SpanningWindow spanningWindow;
     public ButtonListener(int[][] matrix, boolean oriented) {
         this.oriented = oriented;
         this.matrix = matrix;
@@ -19,6 +20,9 @@ public class ButtonListener implements ActionListener {
     }
     public ButtonListener(SearchWindow window) {
         this.searchWindow = window;
+    }
+    public ButtonListener(SpanningWindow window) {
+        this.spanningWindow = window;
     }
     public void actionPerformed(ActionEvent e) {
         if ("Show Ways Window".equals(e.getActionCommand())) {
@@ -56,6 +60,30 @@ public class ButtonListener implements ActionListener {
         if ("New Search".equals(e.getActionCommand())) {
             this.searchWindow
                 .newSearch()
+                .redraw();
+        }
+        if ("Span".equals(e.getActionCommand())) {
+            SpanningWindow window = new SpanningWindow(this.matrix);
+            window.setVisible(true);
+        }
+        if ("Kruskal".equals(e.getActionCommand())) {
+            this.spanningWindow
+                .setAlgorithm(true)
+                .redraw();
+        }
+        if ("Prim".equals(e.getActionCommand())) {
+            this.spanningWindow
+                .setAlgorithm(false)
+                .redraw();
+        }
+        if ("StartSpan".equals(e.getActionCommand())) {
+            this.spanningWindow
+                .start()
+                .redraw();
+        }
+        if ("NextEdge".equals(e.getActionCommand())) {
+            this.spanningWindow
+                .processNext()
                 .redraw();
         }
     }

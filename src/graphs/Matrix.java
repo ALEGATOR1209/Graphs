@@ -53,9 +53,22 @@ public class Matrix {
         }
         return matrix;
     }
+    public static int[][] weightsMatrix(int[][] matrix) {
+        int[][] weightsMatrix = new int[matrix[0].length][matrix.length];
+        Random random = new Random(8 * 1000 + 4 * 100 + 1 * 10 + 0);
+        for (int i = 0; i < weightsMatrix.length; i++) {
+            for (int j = 0; j < weightsMatrix.length; j++) {
+                double element = Matrix.getRandomElement(random, 1, 0);
+                matrix[i][j] = (int) Math.floor(element * 10);
+                matrix[j][i] = matrix[i][j];
+            }
+        }
+        return matrix;
+
+    }
 
     private static double getRandomElement(Random random, int n3, int n4) {
-        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.005 - 0.15);
+        return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.005 - 0.05);
     }
 
     public static HashMap<Number, int[]> findWays(int[][] matrix, int vortex, int length) {

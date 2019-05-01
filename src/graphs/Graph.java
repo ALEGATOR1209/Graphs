@@ -2,12 +2,14 @@ package graphs;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Graph {
     boolean directed;
     private HashMap<Number, Node> nodes = new HashMap<>();
     private boolean strong;
+    int[][] weightMatrix;
 
     public Graph(boolean directed, boolean strong) {
         this.strong = strong;
@@ -20,18 +22,24 @@ public class Graph {
     }
     public void draw(JFrame window) {
         this.nodes.values().forEach(
-            node -> node.drawConnections(window)
-        );
-        this.nodes.values().forEach(
-                node -> node.draw(window)
+            node -> {
+                if (this.weightMatrix != null && this.weightMatrix.length > 0) {
+                    node.setWeight(true);
+                }
+                node.draw(window, false)
+                    .drawConnections(window);
+            }
         );
     }
     public void draw(JFrame window, boolean labels) {
         this.nodes.values().forEach(
-            node -> node.drawConnections(window)
-        );
-        this.nodes.values().forEach(
-            node -> node.draw(window, labels)
+            node -> {
+                if (this.weightMatrix.length > 0) {
+                    node.setWeight(true);
+                }
+                node.draw(window, false)
+                    .drawConnections(window);
+            }
         );
     }
     public Graph showStrong() {
@@ -175,8 +183,38 @@ public class Graph {
 
         return matrix;
     }
-    public Graph removeLabelAll() {
-        this.nodes.forEach((k, node) -> node.setLetter(node.getId() + ""));
-        return this;
+    public void setWeightMatrix(int[][] matrix) {
+        weightMatrix = matrix;
+    }
+    public ArrayList<Edge> toEdgeList() {
+        if (this.weightMatrix == null) throw new Error("WeightMatrix needed");
+
+        ArrayList<Edge> edges = new ArrayList<>();
+        for (Number id1 : nodes.keySet()) {
+            Node node = nodes.get(id1);
+            for (Number id2 : node.getConnections().keySet()) {
+                if (id2.intValue() > id1.intValue()) continue;
+                Edge edge = new Edge(weightMatrix[id1.intValue()][id2.intValue()]);
+                edge.connect(node)
+                    .connect(nodes.get(id2));
+                edges.add(edge);
+            }
+        }
+        return edges;
+    }
+    public static ArrayList<Edge> sortEdges(ArrayList<Edge> unsorted) { //smth like bubble sort
+        ArrayList<Edge> sorted = new ArrayList<>();                     //WORST SPEED   - O(nn)
+        int size = unsorted.size();                                     //AVERAGE SPEED - O(nn)
+        while (sorted.size() < size) {                                  //MINIMAL SPEED - O(n)
+            Edge minimum = new Edge(1000000000); //one milliard - it's almost infinity, isn't it?
+            for (Edge edge : unsorted) {
+                if (edge.getWeight() < minimum.getWeight()) {
+                    minimum = edge;
+                }
+            }
+            unsorted.remove(minimum);
+            sorted.add(minimum);
+        }
+        return sorted;
     }
 }

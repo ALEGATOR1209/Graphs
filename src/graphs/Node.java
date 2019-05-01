@@ -3,6 +3,7 @@ package graphs;
 import graphics.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
 
@@ -11,15 +12,20 @@ public class Node {
         FROM_VORTEX_ONLY,
         DEFAULT
     }
-    private int x, y, value, id;
-    private Graph graph;
-    private int size = 50;
-    private int valency = 0;
-    private String letter = "";
-    private Color color = Color.black;
-    private HashMap<Integer, Node> connections = new HashMap<>();
-    private Color connectionColor = Color.black;
     private WaysPolicies drawRepetitiveWays = WaysPolicies.DEFAULT;
+    private Graph graph;
+    private int
+        x, y, value, id,
+        size = 50,
+        valency = 0;
+    private HashMap<Integer, Node> connections = new HashMap<>();
+    private String letter = "";
+    private Color
+        color = Color.black,
+        connectionColor = Color.black;
+    private boolean drawWeight = false;
+    private ArrayList<Edge> specialEdges = new ArrayList<>();
+
     public Node(int x, int y, int value, int id) {
         this.x = x;
         this.y = y;
@@ -32,9 +38,8 @@ public class Node {
         return this;
     }
     public void setRepetitiveWaysPolicy(WaysPolicies policy) { this.drawRepetitiveWays = policy; }
-    public Node setLetter(String letter) {
+    public void setLetter(String letter) {
         this.letter = letter;
-        return this;
     }
     int getId() { return this.id; }
     public Node setColor(Color color) {
@@ -59,7 +64,7 @@ public class Node {
         Vortex vortex = new Vortex(this.x, this.y, this.size, value, isolated, leave, this.color);
         container.add(vortex);
     }
-    void draw(JFrame window, boolean labels) {
+    Node draw(JFrame window, boolean labels) {
         Container container = window.getContentPane();
         boolean isolated = this.valency == 0;
         boolean leave = this.valency == 1;
@@ -69,6 +74,7 @@ public class Node {
         if (!labels) value = String.valueOf(this.value).toCharArray();
         Vortex vortex = new Vortex(this.x, this.y, this.size, value, isolated, leave, this.color);
         container.add(vortex);
+        return this;
     }
 
     boolean isConnected(Node node) {
@@ -124,8 +130,28 @@ public class Node {
                 int endX = graph.x + kx * (int) Math.floor(graph.size * (Math.sin(-180 - angle)) / 2);
                 int endY = graph.y + ky * (int) Math.floor(graph.size * (Math.cos(-180 - angle)) / 2);
 
+                int weight = this.graph.weightMatrix == null ? 0 : this.graph.weightMatrix[this.id][graph.id];
+                JLabel text = new JLabel(weight + "");
+                if (drawWeight && this.id != graph.id) {
+                    int labelX = (int) Math.floor((startX + endX) / 2) + 15;
+                    int labelY = (int) Math.floor((startY + endY) / 2) + 15;
+                    text.setForeground(this.connectionColor);
+                    text.setLocation(labelX, labelY);
+                    text.setSize(20, 20);
+                }
+                for (Edge edge : specialEdges) {
+                    if (edge.getNodes().contains(this) && edge.getNodes().contains(graph)) {
+                        Line line = new Line(startX, startY, endX, endY, this.graph.directed, edge.getColor());
+                        text.setForeground(edge.getColor());
+                        container.add(text);
+                        container.add(line);
+                        return;
+                    }
+                }
+
                 Line line = new Line(startX, startY, endX, endY, this.graph.directed, connectionColor);
                 container.add(line);
+                container.add(text);
             }
         );
     }
@@ -135,7 +161,7 @@ public class Node {
     }
     public HashMap<Integer, Node> getConnections() { return this.connections; }
     public void setConnectionColor(Color color) { this.connectionColor = color; }
-    public String getLetter() { return letter; }
+    public String getLetter() { return letter == null ? letter : "" + value; }
     void locateChilds(int width, int height, boolean type) {
         int k = this.x - connections.size() * width / 2;
         if (connections.size() == 1) {
@@ -159,5 +185,11 @@ public class Node {
     int getChildrenCount() {
         if (connections.size() == 0) return 0;
         return connections.size();
+    }
+    void setWeight(boolean weight) {
+        drawWeight = weight;
+    }
+    public void setSpecialEdge(Edge edge) {
+        specialEdges.add(edge);
     }
 }

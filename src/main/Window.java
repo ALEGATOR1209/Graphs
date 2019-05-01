@@ -25,6 +25,7 @@ public class Window extends JFrame {
         this.init();
     }
     private void init() {
+        this.setLayout(null);
         this.setBounds(this.x, this.y, this.width, this.height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this
@@ -41,6 +42,7 @@ public class Window extends JFrame {
         if (this.condensated) condensated = Matrix.condensateMatrix(condensated);
         this
             .drawGraphSearchButton(matrix)
+            .drawSpanningTreeButton(matrix)
             .drawMatrix(condensated, 670, 500)
             .drawGraph(matrix, this.oriented);
     }
@@ -257,13 +259,24 @@ public class Window extends JFrame {
         return colors;
     }
     private Window drawGraphSearchButton(int[][] matrix) {
-        JButton button = new JButton("Обхід графа");
+        JButton button = new JButton("Обійти");
         button.setFont(this.FONT);
-        button.setSize(285, 30);
+        button.setSize(140, 30);
         button.setLocation(670, 400);
         button.setActionCommand("Search");
         button.addActionListener(new ButtonListener(matrix, this.oriented));
         this.add(button);
+        return this;
+    }
+    private Window drawSpanningTreeButton(int[][] matrix) {
+        JButton button = new JButton("Кістяк");
+        button.setFont(FONT);
+        button.setSize(140, 30);
+        button.setEnabled(!oriented);
+        button.setLocation(815, 400);
+        button.setActionCommand("Span");
+        button.addActionListener(new ButtonListener(matrix, oriented));
+        add(button);
         return this;
     }
 }
