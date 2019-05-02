@@ -18,7 +18,7 @@ public class Window extends JFrame {
     private boolean condensated = false;
     private boolean strong = false;
     private int matrix = 0;
-    private boolean oriented = true;
+    private boolean oriented = false;
     private final Font FONT = new Font("Arial", Font.PLAIN, 16);
     Window(String title) {
         super(title);
@@ -275,7 +275,7 @@ public class Window extends JFrame {
         button.setEnabled(!oriented);
         button.setLocation(815, 400);
         button.setActionCommand("Span");
-        button.addActionListener(new ButtonListener(matrix, oriented));
+        button.addActionListener(new ButtonListener(this, matrix, oriented));
         add(button);
         return this;
     }

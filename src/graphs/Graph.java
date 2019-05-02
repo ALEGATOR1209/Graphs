@@ -46,6 +46,35 @@ public class Graph {
         this.strong = !this.strong;
         return this;
     }
+    public static Graph fromWeightMatrix(int[][] matrix, Color color) {
+        int n = matrix.length;
+        Graph graph = new Graph(false, false);
+        graph.setWeightMatrix(matrix);
+        Node[] nodes = new Node[n];
+
+        for (int i = 0; i < n; i++) {
+            if (matrix[i].length != n) throw new Error(i + " line of matrix has wrong length.");
+            nodes[i] = new Node(i + 10, i * 10, i, i);
+            graph.add(nodes[i]);
+            nodes[i].setGraph(graph);
+        }
+
+        if (nodes.length <= 0) throw new Error("Matrix is empty.");
+
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+            if (matrix[i][j] != 0) {
+                nodes[i].connect(nodes[j]);
+                nodes[i].setColor(color);
+                nodes[i].setWeight(true);
+                nodes[i].setSpecialEdge(new Edge(matrix[i][j])
+                    .setColor(color)
+                    .connect(nodes[i])
+                    .connect(nodes[j])
+                );
+            }
+        }
+        return graph;
+    }
     public static Graph fromMatrix(int[][] matrix, boolean directed, boolean strong, boolean condensated) {
         Graph graph = new Graph(directed, strong);
         if (condensated) matrix = Matrix.condensateMatrix(matrix);
@@ -193,7 +222,8 @@ public class Graph {
         for (Number id1 : nodes.keySet()) {
             Node node = nodes.get(id1);
             for (Number id2 : node.getConnections().keySet()) {
-                if (id2.intValue() > id1.intValue()) continue;
+                if (id1.intValue() > id2.intValue()) continue;
+                if (id1.intValue() == id2.intValue()) continue;
                 Edge edge = new Edge(weightMatrix[id1.intValue()][id2.intValue()]);
                 edge.connect(node)
                     .connect(nodes.get(id2));

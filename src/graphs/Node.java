@@ -41,7 +41,7 @@ public class Node {
     public void setLetter(String letter) {
         this.letter = letter;
     }
-    int getId() { return this.id; }
+    public int getId() { return this.id; }
     public Node setColor(Color color) {
         this.color = color;
         return this;
@@ -137,7 +137,7 @@ public class Node {
                     int labelY = (int) Math.floor((startY + endY) / 2) + 15;
                     text.setForeground(this.connectionColor);
                     text.setLocation(labelX, labelY);
-                    text.setSize(20, 20);
+                    text.setSize(50, 20);
                 }
                 for (Edge edge : specialEdges) {
                     if (edge.getNodes().contains(this) && edge.getNodes().contains(graph)) {
@@ -160,7 +160,10 @@ public class Node {
         window.getContentPane().add(arc);
     }
     public HashMap<Integer, Node> getConnections() { return this.connections; }
-    public void setConnectionColor(Color color) { this.connectionColor = color; }
+    public Node setConnectionColor(Color color) {
+        this.connectionColor = color;
+        return this;
+    }
     public String getLetter() { return letter == null ? letter : "" + value; }
     void locateChilds(int width, int height, boolean type) {
         int k = this.x - connections.size() * width / 2;
@@ -192,4 +195,5 @@ public class Node {
     public void setSpecialEdge(Edge edge) {
         specialEdges.add(edge);
     }
+    public void removeSpecialEdges() { specialEdges = new ArrayList<>(); }
 }

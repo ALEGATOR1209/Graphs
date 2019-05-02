@@ -15,6 +15,11 @@ public class ButtonListener implements ActionListener {
         this.oriented = oriented;
         this.matrix = matrix;
     }
+    public ButtonListener(Window window, int[][] matrix, boolean oriented) {
+        this.oriented = oriented;
+        this.matrix = matrix;
+        this.window = window;
+    }
     public ButtonListener(Window window) {
         this.window = window;
     }
@@ -63,7 +68,13 @@ public class ButtonListener implements ActionListener {
                 .redraw();
         }
         if ("Span".equals(e.getActionCommand())) {
-            SpanningWindow window = new SpanningWindow(this.matrix);
+            SpanningWindow window = new SpanningWindow(
+                this.matrix,
+                this.window.getNumber(1),
+                this.window.getNumber(2),
+                this.window.getNumber(3),
+                this.window.getNumber(4)
+            );
             window.setVisible(true);
         }
         if ("Kruskal".equals(e.getActionCommand())) {
@@ -84,6 +95,11 @@ public class ButtonListener implements ActionListener {
         if ("NextEdge".equals(e.getActionCommand())) {
             this.spanningWindow
                 .processNext()
+                .redraw();
+        }
+        if ("NewSpan".equals(e.getActionCommand())) {
+            this.spanningWindow
+                .restart()
                 .redraw();
         }
     }

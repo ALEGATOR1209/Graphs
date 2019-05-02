@@ -1,5 +1,6 @@
 package graphs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -53,19 +54,19 @@ public class Matrix {
         }
         return matrix;
     }
-    public static int[][] weightsMatrix(int[][] matrix) {
-        int[][] weightsMatrix = new int[matrix[0].length][matrix.length];
-        Random random = new Random(8 * 1000 + 4 * 100 + 1 * 10 + 0);
-        for (int i = 0; i < weightsMatrix.length; i++) {
-            for (int j = 0; j < weightsMatrix.length; j++) {
-                double element = Matrix.getRandomElement(random, 1, 0);
-                matrix[i][j] = (int) Math.floor(element * 10);
-                matrix[j][i] = matrix[i][j];
-            }
-        }
-        return matrix;
-
-    }
+//    public static int[][] weightsMatrix(int[][] matrix) {
+//        int[][] weightsMatrix = new int[matrix[0].length][matrix.length];
+//        Random random = new Random(8 * 1000 + 4 * 100 + 1 * 10 + 0);
+//        for (int i = 0; i < weightsMatrix.length; i++) {
+//            for (int j = 0; j < weightsMatrix.length; j++) {
+//                double element = Matrix.getRandomElement(random, 1, 0);
+//                weightsMatrix[i][j] = (int) Math.floor(element * 10);
+//                weightsMatrix[j][i] = weightsMatrix[i][j];
+//            }
+//        }
+//        return weightsMatrix;
+//
+//    }
 
     private static double getRandomElement(Random random, int n3, int n4) {
         return (random.nextDouble() + random.nextDouble()) * (1 - n3 * 0.01 - n4 * 0.005 - 0.05);
@@ -188,6 +189,18 @@ public class Matrix {
         }
         return O;
     }
+    private static int[][] ZERO(int n) {
+        int[][] ZERO = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
+            ZERO[i][j] = 0;
+        return ZERO;
+    }
+    private static int[][] ONES(int n) {
+        int[][] ONES = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++)
+            ONES[i][j] = 1;
+        return ONES;
+    }
     private static int[][] delete(int[][] matrix, int num) {
         int n = matrix.length;
         int[][] newMatrix = new int[n - 1][n - 1];
@@ -273,5 +286,108 @@ public class Matrix {
             }
         }
         return Matrix.and(condensated, Matrix.O(condensated.length));
+    }
+    public static int[][] edgesToMatrix(int n, ArrayList<Edge> edges) {
+        int[][] matrix = Matrix.ZERO(n);
+
+        for (Edge edge : edges) {
+            Node node1 = edge.getNodes().get(0);
+            Node node2 = edge.getNodes().get(1);
+            matrix[node1.getId()][node2.getId()] = 1;
+            matrix[node2.getId()][node1.getId()] = 1;
+        }
+
+        return matrix;
+    }
+    public static int[][] edgesToMatrixWeight(int n, ArrayList<Edge> edges) {
+        int[][] matrix = Matrix.ZERO(n);
+
+        for (Edge edge : edges) {
+            Node node1 = edge.getNodes().get(0);
+            Node node2 = edge.getNodes().get(1);
+            matrix[node1.getId()][node2.getId()] = edge.getWeight();
+            matrix[node2.getId()][node1.getId()] = edge.getWeight();
+        }
+
+        return matrix;
+    }
+
+    public static String toString(int[][] matrix) {
+        String result = "";
+        for (int i = 0; i < matrix.length; i++) {
+            String str = "";
+            for (int j = 0; j < matrix[i].length; j++) {
+                str = str.concat(matrix[i][j] + "  ");
+            }
+            result = result
+                .concat(str)
+                .concat("\n");
+        }
+        return result;
+    }
+
+    public static int[][] toBoolean(int[][] matrix) {
+        int[][] bool = new int[matrix.length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) for (int j = 0; j < matrix.length; j++) {
+            if (matrix[i][j] == 0) bool[i][j] = 0;
+            else bool[i][j] = 1;
+        }
+        return bool;
+    }
+    public static int[][] not(int[][] matrix) {
+        int[][] notMatrix = new int[matrix.length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) for (int j = 0; j < matrix.length; j++) {
+            if (matrix[i][j] == 0) notMatrix[i][j] = 1;
+            else notMatrix[i][j] = 1;
+        }
+        return notMatrix;
+    }
+    public static int[][] plus(int[][] a, int[][] b) {
+        int[][] sum = new int[a.length][a.length];
+        for (int i = 0; i < a.length; i++) for (int j = 0; j < a.length; j++) {
+            sum[i][j] = a[i][j] + b[i][j];
+        }
+        return sum;
+    }
+    public static int max(int[][] matrix) {
+        int max = -1000000000;
+        for (int[] i : matrix) for (int j : i) if (j > max) max = j;
+        return max;
+    }
+    public static int[][] elementMultiplication(int[][] a, int[][] b) {
+        int[][] res = new int[a.length][a.length];
+        for (int i = 0; i < a.length; i++) for (int j = 0; j < a.length; j++) {
+            res[i][j] = a[i][j] * b[i][j];
+        }
+        return res;
+    }
+    public static int[][] triangle(int n) {
+        int[][] triangle = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+            if (j <= i - 1) triangle[i][j] = 1;
+            else triangle[i][j] = 0;
+        }
+        return triangle;
+    }
+    public static int[][] generateWeightMatrix(int n1, int n2, int n3, int n4) {
+        int[][] W;
+        int[][] A = Matrix.generateMatrix(8, 4, 1, 0, true);
+        int[][] Wt = new int[A.length][A.length];
+        Random random = new Random(1000 * n1 + 100 * n2 + 10 * n3 + n4);
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A.length; j++) {
+                double element = random.nextDouble() * 100;
+                Wt[i][j] = (int) Math.floor(element);
+            }
+        }
+        Wt = Matrix.elementMultiplication(Wt, A);
+        int[][] B = Matrix.and(Wt, Matrix.ONES(A.length));
+        Wt = Matrix.plus(
+            Matrix.toBoolean(Matrix.and(B, Matrix.not(Matrix.transposition(B)))),
+            Matrix.elementMultiplication(Matrix.toBoolean(Matrix.and(B, Matrix.transposition(B))), Wt)
+        );
+
+        W = Matrix.plus(Wt, Matrix.transposition(Wt));
+        return W;
     }
 }

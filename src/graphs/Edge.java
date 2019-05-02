@@ -25,7 +25,7 @@ public class Edge {
                 result = node.getLetter();
                 continue;
             }
-            result = result.concat("-" + weight + "->" + node.getLetter());
+            result = result.concat("-->" + node.getLetter());
         }
         return result;
     }

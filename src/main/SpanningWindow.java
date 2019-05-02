@@ -1,10 +1,7 @@
 package main;
 
 import graphics.Background;
-import graphs.Edge;
-import graphs.Graph;
-import graphs.Matrix;
-import graphs.Node;
+import graphs.*;
 import templates.*;
 
 import javax.swing.*;
@@ -21,18 +18,25 @@ public class SpanningWindow extends JFrame {
     private final int
         X = 0,
         Y = 0,
-        WIDTH = 1100,
-        HEIGHT = 800;
+        WIDTH = 1700,
+        HEIGHT = 1000;
+    private int n1, n2, n3, n4;
     private boolean
         initialization = true,
+        finish = false,
         algorithm = true; //true = Kruskal, false = Prim
     private Graph graph;
     private ArrayList<Edge> edges = new ArrayList<>();
     private HashSet<Node> nodes = new HashSet<>();
+    private ArrayList<Edge> spanEdges = new ArrayList<>();
 
-    public SpanningWindow(int[][] matrix) {
+    public SpanningWindow(int[][] matrix, int n1, int n2, int n3, int n4) {
         super("Побудова кістякового дерева");
         this.matrix = matrix;
+        this.n1 = n1;
+        this.n2 = n2;
+        this.n3 = n3;
+        this.n4 = n4;
         this.setBounds(this.X, this.Y, this.WIDTH, this.HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
@@ -44,13 +48,18 @@ public class SpanningWindow extends JFrame {
             drawInitComponents();
             return;
         }
+        if (this.finish) {
+            drawFinishComponents();
+            return;
+        }
         this
             .drawGraph()
             .add(new Background(Color.white, 650, 650, 5, 5))
             .drawNextButton(700, 10)
-            .drawMatrix("Матриця ваг", matrix, 700, 75)
-            .drawLabel("Ребра до обрацювання:", 700, 450)
-            .drawEdgesList(700, 475);
+            .drawMatrix("Матриця ваг", Matrix.generateWeightMatrix(n1, n2, n3, n4), 700, 75)
+            .drawLabel("Ребра до обрацювання:", 1250, 75)
+            .drawEdgesList(1250, 100)
+            .drawMatrix("Матриця кістякового дерева", Matrix.edgesToMatrix(graph.getNodeCount(), spanEdges), 700, 600);
     }
     private SpanningWindow drawMatrix(String title, int[][] matrix, int x, int y) {
         if (matrix.length == 0) return this;
@@ -58,23 +67,23 @@ public class SpanningWindow extends JFrame {
         text.setSize(x + 10 * matrix.length, 20);
         this.add(text);
         int n = matrix.length;
-        for (int i = 0; i < n; i++) {
-            Text horizontalNumber = new Text(i + "", x + 5 + 25 * (i + 1), y + 25, 30);
-            horizontalNumber.setForeground(Color.red);
-            this.add(horizontalNumber);
-            Text verticalNumber = new Text(i + "", x, y + 25 * (i + 2));
-            verticalNumber.setForeground(Color.red);
-            this.add(verticalNumber);
+        int size = (Matrix.max(matrix) + "").length() * 13;
+        if (size < 25) size = 25;
 
-            String connections = "";
-            for (int j = 0; j < matrix[i].length; j++)
-                connections = connections.concat("  " + matrix[i][j]);
-            connections = connections.trim();
-            JLabel string = new JLabel(connections);
-            string.setSize(300, 25);
-            string.setLocation(x + 30, y + 25 * (i + 2));
-            string.setFont(new Font("Arial", Font.PLAIN, 16));
-            this.add(string);
+        //creating column and line headers
+        for (int i = 0; i < n; i++) {
+            Text textH = new Text(i + "", x + (i + 1) * size, y + size);
+            Text textV = new Text(i + "", x, y + (i + 2) * size);
+            textH.setForeground(Color.red);
+            textV.setForeground(Color.red);
+            this
+                .add(textH)
+                .add(textV);
+        }
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+            String str = matrix[i][j] + "";
+            Text number = new Text(str, x + size * (i + 1), y + size * (j + 2));
+            add(number);
         }
         return this;
     }
@@ -83,7 +92,7 @@ public class SpanningWindow extends JFrame {
         if (this.graph == null) {
             this.graph = Graph.fromMatrix(matrix, false, false, false)
                 .circle(300, 300, 270);
-            graph.setWeightMatrix(Matrix.weightsMatrix(matrix));
+            graph.setWeightMatrix(Matrix.generateWeightMatrix(n1, n2, n3, n4));
             this.edges = Graph.sortEdges(graph.toEdgeList());
         }
 
@@ -115,9 +124,39 @@ public class SpanningWindow extends JFrame {
             .add(prim)
             .add(start)
             .drawGraph()
-            .drawMatrix("Матриця ваг", matrix, 700, 200)
+            .drawMatrix("Матриця ваг", Matrix.generateWeightMatrix(n1, n2, n3, n4), 700, 200)
             .add(new Background(Color.white, 650, 650, 5, 5));
 
+    }
+    private void drawFinishComponents() {
+        Graph.fromWeightMatrix(Matrix.edgesToMatrixWeight(graph.getNodeCount(), spanEdges), EXPLORED_COLOR)
+            .circle(1000, 400, 300)
+            .draw(this);
+        this
+            .graph
+            .circle(300, 400, 300)
+            .draw(this);
+
+        JButton button = new JButton("Заново");
+        button.setLocation(10, 10);
+        button.setSize(300, 70);
+        button.setFont(new Font("Arial", Font.BOLD, 20));
+        button.setActionCommand("NewSpan");
+        button.addActionListener(new ButtonListener(this));
+        this
+            .add(new Background(Color.white, 1350, 1000, 5, 90))
+            .drawMatrix("Матриця кістякового дерева", Matrix.edgesToMatrix(graph.getNodeCount(), spanEdges), 1375, 100)
+            .drawMatrix("Матриця ваг кістяка", Matrix.edgesToMatrixWeight(graph.getNodeCount(), spanEdges), 1375, 450)
+            .add(button);
+    }
+    public SpanningWindow restart() {
+        this.finish = false;
+        this.initialization = true;
+        this.graph = null;
+        this.edges = new ArrayList<>();
+        this.spanEdges = new ArrayList<>();
+        this.nodes = new HashSet<>();
+        return this;
     }
     private SpanningWindow add(JComponent comp) {
         this.getContentPane().add(comp);
@@ -155,7 +194,7 @@ public class SpanningWindow extends JFrame {
         for (Edge edge : edges) {
             Text text = new Text(edge.toString(), x + 80 * dx, y + 25 * dy, 100);
             dy++;
-            if (dy >= edges.size() / 4) {
+            if (dy >= edges.size() / 2) {
                 dx++;
                 dy = 0;
             }
@@ -174,18 +213,66 @@ public class SpanningWindow extends JFrame {
         return this;
     }
     public SpanningWindow processNext() {
+        if ( //terrible expression but who cares?
+            Matrix.condensateMatrix(
+                Matrix.edgesToMatrix(graph.getNodeCount(), spanEdges)
+            ).length == 1 && nodes.size() == graph.getNodeCount()
+        ) {
+            finish = true;
+            edges = new ArrayList<>();
+            redraw();
+            return this;
+        }
+        if (edges.size() == 0) {
+            finish = true;
+            redraw();
+            return this;
+        }
         if (algorithm) processNextKruskal();
         else processNextPrim();
         return this;
     }
     private void processNextKruskal() {
+        Edge edge = edges.get(0);
 
+        int counter = 0;
+        for (Node node : edge.getNodes()) if (nodes.contains(node)) counter++;
+
+        if (counter < 2) {
+            edge.setColor(EXPLORED_COLOR);
+            spanEdges.add(edge);
+            edges.remove(0);
+            for (Node node : edge.getNodes()) {
+                if (!nodes.contains(node)) nodes.add(node);
+                node
+                    .setColor(EXPLORED_COLOR)
+                    .setSpecialEdge(edge);
+            }
+            return;
+        }
+
+        Node node1 = edge.getNodes().get(0);
+        Node node2 = edge.getNodes().get(1);
+        if (hasWay(node1, node2)) {
+            edge.setColor(CYCLE_COLOR);
+            edge.getNodes().forEach(node -> node.setSpecialEdge(edge));
+            edges.remove(0);
+            return;
+        }
+
+        edge
+            .setColor(EXPLORED_COLOR)
+            .getNodes()
+            .forEach(node -> node.setSpecialEdge(edge));
+        edges.remove(0);
+        spanEdges.add(edge);
     }
     private void processNextPrim() {
         if (nodes.size() == 0) {
             Edge edge = edges.get(0);
             edges.remove(0);
             nodes.addAll(edge.getNodes());
+            spanEdges.add(edge);
             edge.setColor(EXPLORED_COLOR);
             edge.getNodes().forEach(node -> node
                 .setColor(EXPLORED_COLOR)
@@ -207,6 +294,7 @@ public class SpanningWindow extends JFrame {
                     .setSpecialEdge(edge)
                 );
                 edges.remove(i);
+                spanEdges.add(edge);
                 nodes.addAll(edgeNodes);
                 return;
             }
@@ -218,5 +306,11 @@ public class SpanningWindow extends JFrame {
             }
             i++;
         }
+    }
+    private boolean hasWay(Node node1, Node node2) {
+        int[][] matrix = Matrix.edgesToMatrix(graph.getNodeCount(), spanEdges);
+        int[][] attainability = Matrix.getAttainabilityMatrix(matrix);
+        if (attainability[node1.getId()][node2.getId()] == 0) return false;
+        return true;
     }
 }
