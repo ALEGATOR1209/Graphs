@@ -9,6 +9,7 @@ import javax.swing.event.ChangeListener;
 public class SliderListener implements ChangeListener {
     private WaysWindow waysWindow;
     private SearchWindow searchWindow;
+    private DijkstraWindow dijkstraWindow;
     private Window window;
     private String type;
     public SliderListener (Window window, String type) {
@@ -21,6 +22,10 @@ public class SliderListener implements ChangeListener {
     }
     public SliderListener (SearchWindow window, String type) {
         this.searchWindow = window;
+        this.type = type;
+    }
+    public SliderListener (DijkstraWindow window, String type) {
+        this.dijkstraWindow = window;
         this.type = type;
     }
     public void stateChanged(ChangeEvent e) {
@@ -38,6 +43,12 @@ public class SliderListener implements ChangeListener {
         }
         if (this.type.equals("Search")) {
             this.searchHandler(value);
+        }
+        if (this.type.equals("startVortex")) {
+            this.startVortexHandler(value);
+        }
+        if (this.type.equals("showWay")) {
+            this.showVortexHandler(value);
         }
     }
     private void vortexHandler(int value) {
@@ -62,6 +73,16 @@ public class SliderListener implements ChangeListener {
     private void searchHandler(int value) {
         this.searchWindow
             .setStart(value)
+            .redraw();
+    }
+    private void startVortexHandler(int value) {
+        this.dijkstraWindow
+            .setStartVortex(value)
+            .redraw();
+    }
+    private void showVortexHandler(int value) {
+        this.dijkstraWindow
+            .setShowVortex(value)
             .redraw();
     }
 }

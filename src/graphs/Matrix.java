@@ -384,7 +384,10 @@ public class Matrix {
         int[][] B = Matrix.and(Wt, Matrix.ONES(A.length));
         Wt = Matrix.plus(
             Matrix.toBoolean(Matrix.and(B, Matrix.not(Matrix.transposition(B)))),
-            Matrix.elementMultiplication(Matrix.toBoolean(Matrix.and(B, Matrix.transposition(B))), Wt)
+            Matrix.elementMultiplication(
+                Matrix.triangle(A.length),
+                Matrix.elementMultiplication(Matrix.toBoolean(Matrix.and(B, Matrix.transposition(B))), Wt)
+            )
         );
 
         W = Matrix.plus(Wt, Matrix.transposition(Wt));

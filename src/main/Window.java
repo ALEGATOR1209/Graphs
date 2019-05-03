@@ -34,6 +34,7 @@ public class Window extends JFrame {
             .drawWaysButton()
             .drawStrongCheckBox()
             .drawCondensationButton()
+            .drawDijkstraButton()
             .createMatrix();
     }
     private void createMatrix() {
@@ -101,7 +102,7 @@ public class Window extends JFrame {
         int[][] matrix = Matrix.generateMatrix(this.n1, this.n2, this.n3, this.n4, !this.oriented);
         JButton button = new JButton("Шляхи");
         button.setFont(this.FONT);
-        button.setSize(100, 30);
+        button.setSize(140, 30);
         button.setLocation(670, 360);
         button.setActionCommand("Show Ways Window");
         button.addActionListener(new ButtonListener(matrix, this.oriented));
@@ -242,10 +243,11 @@ public class Window extends JFrame {
         return this;
     }
     private Window drawCondensationButton() {
-        JButton button = new JButton(this.condensated ? "Деконденсувати" : "Конденсувати");
+        JCheckBox button = new JCheckBox( "Конденсувати");
         button.setFont(this.FONT);
+        button.setSelected(this.condensated);
         button.setSize(180, 30);
-        button.setLocation(775, 360);
+        button.setLocation(815, 450);
         button.setActionCommand("Condensation");
         button.addActionListener(new ButtonListener(this));
         this.add(button);
@@ -276,6 +278,18 @@ public class Window extends JFrame {
         button.setLocation(815, 400);
         button.setActionCommand("Span");
         button.addActionListener(new ButtonListener(this, matrix, oriented));
+        add(button);
+        return this;
+    }
+    private Window drawDijkstraButton() {
+        JButton button = new JButton("Дейкстра");
+        button.setFont(FONT);
+        button.setEnabled(!this.oriented);
+        button.setSize(140, 30);
+        button.setEnabled(!oriented);
+        button.setLocation(815, 360);
+        button.setActionCommand("Dijkstra");
+        button.addActionListener(new ButtonListener(this, Matrix.generateMatrix(n1, n2, n3, n4, oriented), oriented));
         add(button);
         return this;
     }

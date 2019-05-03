@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Graph {
     boolean directed;
@@ -246,5 +247,8 @@ public class Graph {
             sorted.add(minimum);
         }
         return sorted;
+    }
+    public HashMap<Number, Node> getNodes() {
+        return this.nodes;
     }
 }

@@ -195,5 +195,8 @@ public class Node {
     public void setSpecialEdge(Edge edge) {
         specialEdges.add(edge);
     }
-    public void removeSpecialEdges() { specialEdges = new ArrayList<>(); }
+    public Node removeSpecialEdges() {
+        specialEdges = new ArrayList<>();
+        return this;
+    }
 }

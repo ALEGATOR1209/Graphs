@@ -11,6 +11,7 @@ public class ButtonListener implements ActionListener {
     private Window window;
     private SearchWindow searchWindow;
     private SpanningWindow spanningWindow;
+    private DijkstraWindow dijkstraWindow;
     public ButtonListener(int[][] matrix, boolean oriented) {
         this.oriented = oriented;
         this.matrix = matrix;
@@ -28,6 +29,9 @@ public class ButtonListener implements ActionListener {
     }
     public ButtonListener(SpanningWindow window) {
         this.spanningWindow = window;
+    }
+    public ButtonListener(DijkstraWindow window) {
+        this.dijkstraWindow = window;
     }
     public void actionPerformed(ActionEvent e) {
         if ("Show Ways Window".equals(e.getActionCommand())) {
@@ -100,6 +104,35 @@ public class ButtonListener implements ActionListener {
         if ("NewSpan".equals(e.getActionCommand())) {
             this.spanningWindow
                 .restart()
+                .redraw();
+        }
+        if ("Dijkstra".equals(e.getActionCommand())) {
+            DijkstraWindow window = new DijkstraWindow(
+                this.window.getNumber(1),
+                this.window.getNumber(2),
+                this.window.getNumber(3),
+                this.window.getNumber(4)
+            );
+            window.setVisible(true);
+        }
+        if ("Min".equals(e.getActionCommand())) {
+            this.dijkstraWindow
+                .setAlgorithm(true)
+                .redraw();
+        }
+        if ("Max".equals(e.getActionCommand())) {
+            this.dijkstraWindow
+                .setAlgorithm(false)
+                .redraw();
+        }
+        if ("StartDijkstra".equals(e.getActionCommand())) {
+            this.dijkstraWindow
+                .start()
+                .redraw();
+        }
+        if ("DijkstraNext".equals(e.getActionCommand())) {
+            this.dijkstraWindow
+                .processNext()
                 .redraw();
         }
     }
