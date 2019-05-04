@@ -2,9 +2,7 @@ package main;
 
 public class Main {
     public static void main(String[] args) {
-        new DijkstraWindow(8, 4, 1, 0)
+        new Window("Graphs")
             .setVisible(true);
-        //        new Window("Graphs")
-//            .setVisible(true);
     }
 }

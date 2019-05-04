@@ -169,13 +169,49 @@ public class DijkstraWindow extends JFrame {
     }
 
     private void drawFinalComponents() {
-        drawLabel("Оберіть шлях, для перегляду:", 700, 10);
-        Slider slider = new Slider(700, 50, wortexToShow, graph.getNodeCount() - 1);
+        JButton button = new JButton("Новий пошук");
+        button.setLocation(700, 10);
+        button.setSize(200, 40);
+        button.setActionCommand("NewDijkstra");
+        button.addActionListener(new ButtonListener(this));
+        drawLabel("Оберіть шлях, для перегляду:", 700, 60);
+        Slider slider = new Slider(700, 80, wortexToShow, graph.getNodeCount() - 1);
         slider.addChangeListener(new SliderListener(this, "showWay"));
+        Edge currentWay = new Edge();
+        for (Edge edge : ways) {
+            Node node1 = edge.getNodes().get(0);
+            Node node2 = edge.getNodes().get(1);
+            if (
+                (node1 == graph.get(startVortex) && node2 == graph.get(wortexToShow))
+                ||
+                (node1 == graph.get(wortexToShow) && node2 == graph.get(startVortex))
+            ) {
+                currentWay = edge.clone();
+                currentWay.setThrought(null);
+            }
+        }
         this.add(slider)
-            .add(new Background(Color.white, 650, 650, 10, 10))
-            .drawWays(700, 70)
-            .drawWay(10, 10, wortexToShow);
+            .add(button)
+            .drawLabel(currentWay.toWay(), 700, 110)
+            .drawLabel("Усі шляхи:", 700, 140)
+            .drawWays(700, 160)
+            .drawWay(10, 10, wortexToShow)
+            .add(new Background(Color.white, 650, 650, 10, 10));
+    }
+    public DijkstraWindow newSearch() {
+        this.finish = false;
+        this.initialization = true;
+        this.startVortex = 0;
+        this.wortexToShow = 0;
+        this.active = 0;
+        this.status = "";
+        this.edges = new ArrayList<>();
+        this.ways = new ArrayList<>();
+        this.temporary = new ArrayList<>();
+        this.graph = null;
+        this.matrix = null;
+        this.weightMatrix = null;
+        return this;
     }
 
     private DijkstraWindow drawWays(int x, int y) {
@@ -185,33 +221,55 @@ public class DijkstraWindow extends JFrame {
         return this;
     }
     private DijkstraWindow drawWay(int x, int y, int destination) {
-        Node through = null;
-        Node startVortex = graph.get(this.startVortex);
+        Node start = graph.get(this.startVortex);
         Node end = graph.get(destination);
-        ArrayList<Edge> way = new ArrayList<>();
-        for (Edge edge : ways) {
-            ArrayList<Node> nodes = edge.getNodes();
-            Node node1 = nodes.get(0);
-            Node node2 = nodes.get(1);
-            if ((node1 == startVortex && node2 == end) || (node1 == end && node2 == startVortex)) {
-                way.add(edge);
-                through = edge.getThrough();
-            }
-        }
+        graph.removeAllSpecialEdges();
+        graph
+            .setColorAll(UNEXPLORED_COLOR)
+            .setConnectionsColorAll(UNEXPLORED_COLOR);
 
-        while (through != null) {
+        boolean endOfSearch = false;
+        while (!endOfSearch) {
             for (Edge edge : ways) {
                 ArrayList<Node> nodes = edge.getNodes();
                 Node node1 = nodes.get(0);
                 Node node2 = nodes.get(1);
-                if ((node1 == startVortex && node2 == through) || (node1 == through && node2 == startVortex)) {
-                    way.add(edge);
-                    through = edge.getThrough();
+                if ((node1 == start && node2 == end) || (node1 == end && node2 == start)) {
+                    Node through = edge.getThrough();
+                    if (through == null) {
+                        start.setSpecialEdge(edge);
+                        end.setSpecialEdge(edge);
+                        edge.setColor(ACTIVE_COLOR);
+                        start.setSpecialEdge(edge);
+                        end.setSpecialEdge(edge);
+                        start.setColor(ACTIVE_COLOR);
+                        end.setColor(ACTIVE_COLOR);
+                        endOfSearch = true;
+                    }
+                    else {
+                        //new edge
+                        Edge newEdge = new Edge();
+                        newEdge
+                            .setWeight(weightMatrix[through.getId()][end.getId()])
+                            .connect(end)
+                            .connect(through)
+                            .setColor(ACTIVE_COLOR);
+                        end
+                            .setColor(ACTIVE_COLOR)
+                            .setSpecialEdge(newEdge);
+                        through
+                            .setColor(ACTIVE_COLOR)
+                            .setSpecialEdge(newEdge);
+                        start.setColor(ACTIVE_COLOR);
+                        end = graph.get(through.getId());
+                    }
                 }
             }
         }
 
-        System.out.println(Matrix.toString(Matrix.edgesToMatrix(graph.getNodeCount(), way)));
+        graph
+            .circle(x + 270, y + 270, 270)
+            .draw(this);
 
         return this;
     }
@@ -337,6 +395,11 @@ public class DijkstraWindow extends JFrame {
         temporary.remove(currentActive);
         if (temporary.size() == 0) {
             finish = true;
+            graph.get(active)
+                .setConnectionColor(PERMANENT_COLOR)
+                .setColor(PERMANENT_COLOR)
+                .removeSpecialEdges();
+            graph.removeAllSpecialEdges();
             status = "Пошук завершено.";
             return;
         }

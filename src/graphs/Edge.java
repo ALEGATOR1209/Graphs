@@ -6,9 +6,10 @@ import java.util.ArrayList;
 public class Edge {
     private ArrayList<Node> nodes = new ArrayList<>();
     private Node through;
-    private int weight;
+    private int weight = 0;
     private Color color;
 
+    public Edge() {}
     public Edge(int weight) {
         this.weight = weight;
     }
@@ -30,7 +31,7 @@ public class Edge {
                 result = node.getLetter();
                 continue;
             }
-            result = result.concat("-" + (through == null ? "" : through.getId()) + "->" + node.getLetter());
+            result = result.concat("-" + (through == null ? "-" : through.getId()) + "->" + node.getLetter());
         }
         return result;
     }

@@ -135,5 +135,10 @@ public class ButtonListener implements ActionListener {
                 .processNext()
                 .redraw();
         }
+        if ("NewDijkstra".equals(e.getActionCommand())) {
+            this.dijkstraWindow
+                .newSearch()
+                .redraw();
+        }
     }
 }

@@ -76,6 +76,24 @@ public class Graph {
         }
         return graph;
     }
+    public static Graph fromWeightMatrix(int[][] matrix, Color color, boolean isolated) {
+        Graph graph = Graph.fromWeightMatrix(matrix, color);
+        if (!isolated) {
+            int count = graph.getNodeCount();
+            for (int i = 0; i < count; i++) {
+                Node node = graph.get(i);
+                if (node.getConnections().size() == 0) {
+                    graph.remove(i);
+                }
+            }
+        }
+        return graph;
+    }
+    private Graph remove(int id) {
+        this.nodes.get(id).setGraph(null);
+        this.nodes.remove(id);
+        return this;
+    }
     public static Graph fromMatrix(int[][] matrix, boolean directed, boolean strong, boolean condensated) {
         Graph graph = new Graph(directed, strong);
         if (condensated) matrix = Matrix.condensateMatrix(matrix);
@@ -137,7 +155,7 @@ public class Graph {
         int n = this.nodes.size();
         double angleStep = Math.PI * 2 / n;
         double angle = 0;
-        for (int i = 0; i < n; i++) {
+        for (Number i : nodes.keySet()) {
             int dX = (int) Math.floor(x + R * Math.sin(angle));
             int dY = (int) Math.floor(y - R * Math.cos(angle));
             this.nodes
@@ -250,5 +268,10 @@ public class Graph {
     }
     public HashMap<Number, Node> getNodes() {
         return this.nodes;
+    }
+    public Graph removeAllSpecialEdges() {
+        this.nodes
+            .forEach((key, node) -> node.removeSpecialEdges());
+        return this;
     }
 }
