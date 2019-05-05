@@ -101,7 +101,6 @@ public class Node {
                 if (angle != angle) angle = 90;
                 int kx = 1, ky = 1;
                 if (dy > 0 && dx < 0) {
-                    ky = 1;
                     kx = 1;
                 }
                 if (dy > 0 && dx > 0) {
@@ -117,7 +116,6 @@ public class Node {
                     ky = -1;
                 }
                 if (dx == 0 && dy < 0) {
-                    kx = 1;
                     ky = -1;
                 }
                 if (dy < 0 && dx > 0) {

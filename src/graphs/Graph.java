@@ -269,9 +269,8 @@ public class Graph {
     public HashMap<Number, Node> getNodes() {
         return this.nodes;
     }
-    public Graph removeAllSpecialEdges() {
+    public void removeAllSpecialEdges() {
         this.nodes
             .forEach((key, node) -> node.removeSpecialEdges());
-        return this;
     }
 }

@@ -314,10 +314,10 @@ public class Matrix {
 
     public static String toString(int[][] matrix) {
         String result = "";
-        for (int i = 0; i < matrix.length; i++) {
+        for (int[] ints : matrix) {
             String str = "";
-            for (int j = 0; j < matrix[i].length; j++) {
-                str = str.concat(matrix[i][j] + "  ");
+            for (int anInt : ints) {
+                str = str.concat(anInt + "  ");
             }
             result = result
                 .concat(str)
@@ -326,7 +326,7 @@ public class Matrix {
         return result;
     }
 
-    public static int[][] toBoolean(int[][] matrix) {
+    private static int[][] toBoolean(int[][] matrix) {
         int[][] bool = new int[matrix.length][matrix.length];
         for (int i = 0; i < matrix.length; i++) for (int j = 0; j < matrix.length; j++) {
             if (matrix[i][j] == 0) bool[i][j] = 0;
@@ -334,7 +334,7 @@ public class Matrix {
         }
         return bool;
     }
-    public static int[][] not(int[][] matrix) {
+    private static int[][] not(int[][] matrix) {
         int[][] notMatrix = new int[matrix.length][matrix.length];
         for (int i = 0; i < matrix.length; i++) for (int j = 0; j < matrix.length; j++) {
             if (matrix[i][j] == 0) notMatrix[i][j] = 1;
@@ -342,7 +342,7 @@ public class Matrix {
         }
         return notMatrix;
     }
-    public static int[][] plus(int[][] a, int[][] b) {
+    private static int[][] plus(int[][] a, int[][] b) {
         int[][] sum = new int[a.length][a.length];
         for (int i = 0; i < a.length; i++) for (int j = 0; j < a.length; j++) {
             sum[i][j] = a[i][j] + b[i][j];
@@ -354,14 +354,14 @@ public class Matrix {
         for (int[] i : matrix) for (int j : i) if (j > max) max = j;
         return max;
     }
-    public static int[][] elementMultiplication(int[][] a, int[][] b) {
+    private static int[][] elementMultiplication(int[][] a, int[][] b) {
         int[][] res = new int[a.length][a.length];
         for (int i = 0; i < a.length; i++) for (int j = 0; j < a.length; j++) {
             res[i][j] = a[i][j] * b[i][j];
         }
         return res;
     }
-    public static int[][] triangle(int n) {
+    private static int[][] triangle(int n) {
         int[][] triangle = new int[n][n];
         for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
             if (j <= i - 1) triangle[i][j] = 1;
