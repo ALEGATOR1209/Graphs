@@ -43,7 +43,7 @@ public class DijkstraWindow extends JFrame {
         this.n3 = n3;
         this.n4 = n4;
         this.setBounds(this.X, this.Y, this.WIDTH, this.HEIGHT);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         this.getContentPane().setLayout(null);
         this.init();
     }
